@@ -2,18 +2,19 @@ import React, { useState, useCallback } from 'react';
 import { ReactFlow, Controls, Background, useNodesState, useEdgesState, addEdge, MiniMap, getIncomers, getOutgoers } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import NodePalette from './Components/NodePalette';
-import { NodeMouseHandler } from '@xyflow/react';
+import { nodeHandlers } from './utils/nodeHandlers';
 import AskAINode from './Components/Nodes/AskAINode';
-
 import PDFNode from './Components/Nodes/PDFNode';
 import api from './services/api';
 import { Node, Edge, TransferData } from './types/types';
-
 
 const App: React.FC = () => {
   const [showPalette, setShowPalette] = useState<boolean>(false);
   const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+
+
 
   const findStartNodes = useCallback((nodes: Node[], edges: Edge[]): Node[] => {
     return nodes.filter((node) => {
@@ -69,7 +70,7 @@ const App: React.FC = () => {
   const nodeTypes = {
     askAI: AskAINode,
     pdfGenerator: PDFNode,
-    
+   
   };
 
   const onConnect = useCallback(
@@ -116,6 +117,47 @@ const App: React.FC = () => {
     event.dataTransfer.dropEffect = 'move';
   };
 
+   // Handle node hover
+   const onNodeMouseEnter = useCallback((event: React.MouseEvent, node: Node) => {
+    setHoveredNodeId(node.id);
+  }, []);
+
+  const onNodeMouseLeave = useCallback(() => {
+    setHoveredNodeId(null);
+  }, []);
+
+  // Duplicate Node
+  const duplicateNode = useCallback((nodeId: string) => {
+    setNodes((nds) => {
+      const nodeToDuplicate = nds.find((n) => n.id === nodeId);
+      if (nodeToDuplicate) {
+        const newNode = {
+          ...nodeToDuplicate,
+          id: `${nodeToDuplicate.type}-${Date.now()}`,
+          position: { x: nodeToDuplicate.position.x + 50, y: nodeToDuplicate.position.y + 50 },
+        };
+        return nds.concat(newNode);
+      }
+      return nds;
+    });
+  }, [setNodes]);
+
+  // Rename Node
+  const renameNode = useCallback((nodeId: string, newLabel: string) => {
+    setNodes((nds) =>
+      nds.map((n) => (n.id === nodeId ? { ...n, data: { ...n.data, label: newLabel } } : n))
+    );
+  }, [setNodes]);
+
+  // Delete Node
+  const deleteNode = useCallback((nodeId: string) => {
+    setNodes((nds) => nds.filter((n) => n.id !== nodeId));
+    setEdges((eds) => eds.filter((e) => e.source !== nodeId && e.target !== nodeId));
+  }, [setNodes, setEdges]);
+
+
+
+
   return (
     <div className='w-screen h-screen'>
       <button
@@ -148,10 +190,51 @@ const App: React.FC = () => {
         onConnect={onConnect}
         onDrop={onDrop}
         onDragOver={onDragOver}
+        onNodeMouseLeave={onNodeMouseLeave}
       >
         <Controls />
         <Background variant="dots" gap={10} size={1} />
         <MiniMap/>
+
+         {/* Render action buttons for hovered node */}
+         {nodes.map((node) => (
+          hoveredNodeId === node.id && (
+            <div
+              key={node.id}
+              className="absolute z-10 flex gap-2 p-2 bg-white border border-gray-200 rounded shadow"
+              style={{
+                top: `${node.position.y + 50}px`,
+                left: `${node.position.x}px`,
+              }}
+            >
+              <button
+                onClick={() => duplicateNode(node.id)}
+                className="px-2 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200"
+              >
+                Duplicate
+              </button>
+              <button
+                onClick={() => {
+                  const newLabel = prompt('Enter new label:', node.data.label);
+                  if (newLabel) renameNode(node.id, newLabel);
+                }}
+                className="px-2 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200"
+              >
+                Rename
+              </button>
+              <button
+                onClick={() => deleteNode(node.id)}
+                className="px-2 py-1 bg-red-100 text-red-800 rounded hover:bg-red-200"
+              >
+                Delete
+              </button>
+            </div>
+          )
+        ))}
+
+
+
+
       </ReactFlow>
     </div>
   );
