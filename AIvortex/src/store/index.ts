@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import workflowReducer from './slices/workflowSlice';
+import nodesReducer from './slices/nodesSlice';
+import paletteReducer from './slices/paletteSlice';
 
 export const store = configureStore({
   reducer: {
-    workflow: workflowReducer,
-  },
+    workflow: nodesReducer,
+    palette: paletteReducer
+  }
 });
 
 export type RootState = ReturnType<typeof store.getState>;

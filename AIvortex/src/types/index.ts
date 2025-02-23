@@ -5,26 +5,33 @@ export interface NodeData {
   prompt?: string;
   context?: string;
   model?: string;
-  isEnabled?: boolean;
-  extractQuery?: string;
-  category?: string;
   content?: string;
-  input?: string;
 }
 
-export interface WorkflowNode extends Node<NodeData> {}
-
-export interface NodeResult {
-  output: string;
-  nodeId: string;
-  type: string;
+export interface CustomNode extends Node {
   data: NodeData;
 }
 
+export interface PaletteNode {
+  id: string;
+  label: string;
+  type: string;
+  icon: React.ReactNode | string;
+}
+
+export interface PaletteCategory {
+  category: string;
+  description: string;
+  count: number;
+  nodeIcon: string;
+  items: PaletteNode[];
+}
+
 export interface WorkflowState {
-  nodes: WorkflowNode[];
+  nodes: CustomNode[];
   edges: Edge[];
-  results: Record<string, NodeResult>;
-  isExecuting: boolean;
-  error: string | null;
+}
+
+export interface PaletteState {
+  showPalette: boolean;
 }

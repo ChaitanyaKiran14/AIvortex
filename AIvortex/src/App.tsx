@@ -1,110 +1,123 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   ReactFlow,
   Controls,
   Background,
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  MiniMap,
-  getIncomers,
-  getOutgoers,
   Connection,
+  Edge,
+  addEdge,
+  Node,
+  OnNodesChange,
+  OnEdgesChange,
+  OnConnect,
+  NodeDragHandler,
+  NodeTypes,
 } from '@xyflow/react';
-import { NodePalette } from './components/NodePalette/NodePalette';
-import { nodeHandlers } from './utils/nodeHandlers';
-import { nodeTypes } from './components/Nodes';
-import { AppDispatch, RootState } from './store';
-import {
-  setNodes,
-  setEdges,
-  addNodeResult,
-  setExecuting,
-  setError,
-  clearResults,
-} from './store/slices/workflowSlice';
-import { WorkflowNode, Edge } from './types';
+import { RootState } from './store';
+import { setNodes, setEdges, addNode } from './store/slices/nodesSlice';
+import { togglePalette } from './store/slices/paletteSlice';
+import { NodePalette } from './components/NodePalette';
+import AskAINode from './components/nodes/AskAINode';
+import PDFNode from './components/nodes/PDFNode';
 import '@xyflow/react/dist/style.css';
 
+const nodeTypes: NodeTypes = {
+  askAI: AskAINode,
+  pdfGenerator: PDFNode,
+};
+
 const App: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const [showPalette, setShowPalette] = useState(false);
-  const [nodes, setLocalNodes, onNodesChange] = useNodesState([]);
-  const [edges, setLocalEdges, onEdgesChange] = useEdgesState([]);
+  const dispatch = useDispatch();
+  const { nodes, edges } = useSelector((state: RootState) => state.workflow);
+  const showPalette = useSelector((state: RootState) => state.palette.showPalette);
 
-  const findStartNodes = useCallback((nodes: WorkflowNode[], edges: Edge[]) => {
-    return nodes.filter((node) => {
-      const incomers = getIncomers(node, nodes, edges);
-      return incomers.length === 0;
-    });
-  }, []);
-
-  const getNextNodes = useCallback((node: WorkflowNode, nodes: WorkflowNode[], edges: Edge[]) => {
-    return getOutgoers(node, nodes, edges);
-  }, []);
-
-  const executeFlow = async () => {
-    dispatch(clearResults());
-    dispatch(setExecuting(true));
-
-    const startNodes = findStartNodes(nodes, edges);
-
-    if (startNodes.length === 0) {
-      dispatch(setError('No start nodes found. Add nodes and connect them to create a flow.'));
-      dispatch(setExecuting(false));
-      return;
-    }
-
-    const executedNodes = new Set<string>();
-
-    const executeNodeAndChildren = async (node: WorkflowNode) => {
-      if (executedNodes.has(node.id)) return;
-
-      const handler = nodeHandlers[node.type];
-      if (!handler) {
-        dispatch(setError(`No handler found for node type: ${node.type}`));
-        return;
-      }
-
-      try {
-        const result = await handler(node);
-        dispatch(addNodeResult(result));
-        executedNodes.add(node.id);
-
-        const nextNodes = getNextNodes(node, nodes, edges);
-        for (const nextNode of nextNodes) {
-          await executeNodeAndChildren(nextNode);
-        }
-      } catch (error) {
-        dispatch(setError(`Error executing node ${node.id}: ${error.message}`));
-      }
-    };
-
-    try {
-      for (const startNode of startNodes) {
-        await executeNodeAndChildren(startNode);
-      }
-    } finally {
-      dispatch(setExecuting(false));
-    }
-  };
-
-  const onConnect = useCallback(
-    (params: Connection) => {
-      setLocalEdges((eds) => addEdge(params, eds));
-      dispatch(setEdges(edges));
+  const onNodesChange: OnNodesChange = useCallback(
+    (changes) => {
+      dispatch(setNodes(changes));
     },
-    [setLocalEdges, dispatch, edges]
+    [dispatch]
   );
 
-  // ... rest of the component implementation
-  
+  const onEdgesChange: OnEdgesChange = useCallback(
+    (changes) => {
+      dispatch(setEdges(changes));
+    },
+    [dispatch]
+  );
+
+  const onConnect: OnConnect = useCallback(
+    (connection: Connection) => {
+      dispatch(setEdges((eds) => addEdge(connection, eds)));
+    },
+    [dispatch]
+  );
+
+  const onDrop: React.DragEventHandler = (event) => {
+    event.preventDefault();
+    
+    const reactFlowBounds = event.currentTarget.getBoundingClientRect();
+    const transferData = JSON.parse(
+      event.dataTransfer.getData('application/reactflow')
+    );
+    
+    if (!transferData) return;
+
+    const position = {
+      x: event.clientX - reactFlowBounds.left,
+      y: event.clientY - reactFlowBounds.top,
+    };
+
+    const newNode: Node = {
+      id: `${transferData.type}-${Date.now()}`,
+      type: transferData.type,
+      position,
+      data: { label: transferData.label },
+    };
+
+    dispatch(addNode(newNode));
+  };
+
   return (
     <div className="w-screen h-screen">
-      {/* ... existing JSX ... */}
+      <button
+        onClick={() => dispatch(togglePalette(true))}
+        className="absolute top-5 left-5 z-10 h-10 w-10 bg-pink-300 rounded-full text-pink-900 flex items-center justify-center text-2xl p-7 font-medium hover:bg-pink-400 transition-colors"
+      >
+        +
+      </button>
+
+      {showPalette && (
+        <NodePalette
+          onClose={() => dispatch(togglePalette(false))}
+          onDragStart={(event, nodeData) => {
+            event.dataTransfer.setData(
+              'application/reactflow',
+              JSON.stringify(nodeData)
+            );
+            event.dataTransfer.effectAllowed = 'move';
+          }}
+        />
+      )}
+
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        nodeTypes={nodeTypes}
+        onDrop={onDrop}
+        onDragOver={(event) => {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = 'move';
+        }}
+      >
+        <Controls />
+        <Background variant="dots" gap={10} size={1} />
+      </ReactFlow>
     </div>
   );
 };
 
-export default App
+export default App;
