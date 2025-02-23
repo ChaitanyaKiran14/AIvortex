@@ -1,27 +1,24 @@
-import React, { useState, useEffect } from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { useDispatch } from 'react-redux';
-import { updateNodeData } from '../../store/slices/nodesSlice';
-import { NodeData } from '../../types';
+import { useState } from 'react';
 import { jsPDF } from 'jspdf';
+import { NodeData } from '../../types/types';
 
 interface PDFNodeProps {
-  id: string;
   data: NodeData;
+  id: string;
 }
 
 const PDFNode: React.FC<PDFNodeProps> = ({ data, id }) => {
-  const dispatch = useDispatch();
   const [content, setContent] = useState<string>(data.content || '');
-
-  useEffect(() => {
-    dispatch(updateNodeData({ id, data: { content } }));
-  }, [content, dispatch, id]);
 
   const generatePDF = (): void => {
     const doc = new jsPDF();
     doc.text(content, 10, 10);
     doc.save(`output-${id}.pdf`);
+  };
+
+  const updateNodeData = (): void => {
+    data.content = content;
   };
 
   return (
@@ -41,12 +38,16 @@ const PDFNode: React.FC<PDFNodeProps> = ({ data, id }) => {
         <div>
           <label className="block font-medium mb-1">Content</label>
           <textarea
-            placeholder="Enter content for PDF"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-            rows={4}
-          />
+              placeholder="Enter content for PDF"
+              value={content}
+              onChange={(e) => {
+                setContent(e.target.value);
+                updateNodeData();
+              }}
+              onBlur={updateNodeData}
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+              rows={4}
+            />
         </div>
 
         <button

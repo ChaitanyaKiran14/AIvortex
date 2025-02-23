@@ -1,7 +1,7 @@
-=import { CustomNode } from '../types';
+import { Node } from '../types/types';
 
 export const nodeHandlers = {
-  askAI: (node: CustomNode) => {
+  askAI: (node: Node) => {
     console.log(`Executing AskAI Node: ${node.id}`);
     return {
       output: `AI Response: ${node.data.prompt}`,
@@ -10,7 +10,7 @@ export const nodeHandlers = {
       data: node.data,
     };
   },
-  pdfGenerator: (node: CustomNode, previousOutput?: string) => {
+  pdfGenerator: (node: Node, previousOutput: string) => {
     console.log(`Executing PDFGeneration Node: ${node.id}`);
     console.log(`Received input:`, previousOutput);
     
@@ -22,5 +22,6 @@ export const nodeHandlers = {
       type: node.type,
       data: node.data,
     };
-  }
+  },
+  // Update other handlers similarly
 };

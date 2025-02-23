@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { useDispatch } from 'react-redux';
-import { updateNodeData } from '../../store/slices/nodesSlice';
-import { NodeData } from '../../types';
+import { useState } from 'react';
+import { NodeData } from '../../types/types';
 
 interface AskAINodeProps {
-  id: string;
   data: NodeData;
+  id: string;
 }
 
 const AskAINode: React.FC<AskAINodeProps> = ({ data, id }) => {
-  const dispatch = useDispatch();
-  const [prompt, setPrompt] = useState(data.prompt || '');
-  const [context, setContext] = useState(data.context || '');
-  const [model, setModel] = useState(data.model || 'gemini-pro');
+  const [prompt, setPrompt] = useState<string>(data.prompt || '');
+  const [context, setContext] = useState<string>(data.context || '');
+  const [model, setModel] = useState<string>(data.model || 'gemini-pro');
 
-  useEffect(() => {
-    dispatch(updateNodeData({ id, data: { prompt, context, model } }));
-  }, [prompt, context, model, dispatch, id]);
+  const updateNodeData = (): void => {
+    data.prompt = prompt;
+    data.context = context;
+    data.model = model;
+  };
 
   return (
     <div className="bg-white rounded-lg shadow-md min-w-[32rem]">
@@ -40,17 +39,19 @@ const AskAINode: React.FC<AskAINodeProps> = ({ data, id }) => {
             placeholder="Enter your prompt"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
+            onBlur={updateNodeData}
             className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           />
         </div>
 
         <div>
-          <label className="block font-medium mb-1">Context</label>
+          <label className="block font-medium mb-1">Context</label> 
           <input
             type="text"
             placeholder="Enter additional context"
             value={context}
             onChange={(e) => setContext(e.target.value)}
+            onBlur={updateNodeData}
             className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           />
         </div>
@@ -60,6 +61,7 @@ const AskAINode: React.FC<AskAINodeProps> = ({ data, id }) => {
           <select
             value={model}
             onChange={(e) => setModel(e.target.value)}
+            onBlur={updateNodeData}
             className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           >
             <option value="gemini-pro">Gemini Pro</option>

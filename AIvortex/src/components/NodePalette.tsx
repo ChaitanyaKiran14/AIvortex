@@ -1,14 +1,14 @@
 import React from "react";
 import { Search, X } from "lucide-react";
-import { PaletteCategory } from "../types";
+import { PaletteNode, PaletteItem } from '../types/types';
 
 interface NodePaletteProps {
   onClose: () => void;
-  onDragStart: (event: React.DragEvent<HTMLButtonElement>, nodeData: { type: string; label: string }) => void;
+  onDragStart: (event: React.DragEvent, nodeData: { type: string; label: string }) => void;
 }
 
-export const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
-  const paletteNodes: PaletteCategory[] = [
+const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
+  const paletteNodes: PaletteNode[] = [
     {
       category: 'Using AI',
       description: "Leverage AI for various tasks",
@@ -19,78 +19,41 @@ export const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }
           id: 'ask-ai',  
           label: 'Ask Gemini AI',  
           type: 'askAI',  
+          icon: (<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-cpu mr-1" style={{ color: 'rgb(79, 70, 229)' }}>
+            <rect width="16" height="16" x="4" y="4" rx="2" />
+            <rect width="6" height="6" x="9" y="9" rx="1" />
+            <path d="M15 2v2" />
+            <path d="M15 20v2" />
+            <path d="M2 15h2" />
+            <path d="M2 9h2" />
+            <path d="M20 15h2" />
+            <path d="M20 9h2" />
+            <path d="M9 2v2" />
+            <path d="M9 20v2" />
+          </svg>)
+        },
+        {
+          id: 'pdf-generator',
+          label: 'PDF Generator',
+          type: 'pdfGenerator',
           icon: (
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              className="lucide lucide-cpu mr-1" 
-              style={{ color: 'rgb(79, 70, 229)' }}
-            >
-              <rect width="16" height="16" x="4" y="4" rx="2" />
-              <rect width="6" height="6" x="9" y="9" rx="1" />
-              <path d="M15 2v2" />
-              <path d="M15 20v2" />
-              <path d="M2 15h2" />
-              <path d="M2 9h2" />
-              <path d="M20 15h2" />
-              <path d="M20 9h2" />
-              <path d="M9 2v2" />
-              <path d="M9 20v2" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-file-text mr-1" style={{ color: 'rgb(59, 130, 246)' }}>
+              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" x2="8" y1="13" y2="13" />
+              <line x1="16" x2="8" y1="17" y2="17" />
+              <line x1="10" x2="8" y1="9" y2="9" />
             </svg>
           )
-        },
-        { 
-          id: 'extract-data',  
-          label: 'Extract Data',  
-          type: 'extractData',   
-          icon: (
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              width="16" 
-              height="16" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              className="lucide lucide-hard-drive-upload mr-1" 
-              style={{ color: 'rgb(246, 112, 183)' }}
-            >
-              <path d="m16 6-4-4-4 4" />
-              <path d="M12 2v8" />
-              <rect width="20" height="8" x="2" y="14" rx="2" />
-              <path d="M6 18h.01" />
-              <path d="M10 18h.01" />
-            </svg>
-          )
-        },
-        // Add other AI nodes here...
+        }
       ]
     },
-    {
-      category: 'Web Scraping',
-      description: "Extract Data from Websites automatically",
-      count: 5,
-      nodeIcon: "WEB",
-      items: [
-        { id: 'website-scraper', label: 'Website Scraper', type: 'websiteScraper', icon: '🌐' },
-        { id: 'web-agent', label: 'Web Agent Scraper', type: 'webAgent', icon: '🤖' },
-        { id: 'website-crawler', label: 'Website Crawler', type: 'websiteCrawler', icon: '🤖' },
-        { id: 'job-posting-scraper', label: 'Job Posting Scraper', type: 'jobPostingScraper', icon: '🌐' },
-      ]
-    }
+    // Add other categories similarly
   ];
 
   return (
     <div className="fixed top-5 left-5 z-10 w-[340px] max-w-2xl h-[calc(100vh-40px)] bg-white rounded-lg shadow-lg flex flex-col">
+      {/* Header section */}
       <div className="flex-none border-b border-gray-100">
         <div className="flex items-center justify-between px-4 pt-4">
           <div className="flex gap-4">
@@ -121,6 +84,7 @@ export const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }
         </div>
       </div>
 
+      {/* Scrollable content section */}
       <div className="flex-1 overflow-y-auto min-h-0 bg-gray-50">
         {paletteNodes.map((category, index) => (
           <div key={index} className="p-4">
@@ -141,26 +105,27 @@ export const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }
                 <div className="text-gray-400">›</div>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                {category.items.map((item) => (
-                  <button 
-                    key={item.id}
-                    draggable
-                    onDragStart={(e) => onDragStart(e, {
-                      type: item.type,
-                      label: item.label
-                    })}
-                    className="flex items-center gap-2 p-2.5 bg-white border border-gray-100 rounded-lg hover:border-gray-200 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="w-6 h-6 bg-pink-100 rounded-lg flex items-center justify-center">
-                      {typeof item.icon === 'string' ? (
-                        <span className="text-pink-500 text-xs">{item.icon}</span>
-                      ) : (
-                        item.icon
-                      )}
-                    </div>
-                    <span className="text-sm text-gray-700 truncate">{item.label}</span>
-                  </button>
-                ))}
+              {category.items.map((item) => (
+                <button 
+                  key={item.id}
+                  draggable
+                  onDragStart={(e) => onDragStart(e, {
+                    type: item.type,
+                    label: item.label
+                  })}
+                  className="flex items-center gap-2 p-2.5 bg-white border border-gray-100 rounded-lg hover:border-gray-200 hover:bg-gray-50 transition-colors"
+                >
+                  <div className="w-6 h-6 bg-pink-100 rounded-lg flex items-center justify-center">
+                    {typeof item.icon === 'string' ? (
+                      <span className="text-pink-500 text-xs">{item.icon}</span>
+                    ) : (
+                      item.icon
+                    )}
+                  </div>
+                  <span className="text-sm text-gray-700 truncate">{item.label}</span>
+                </button>
+              ))}
+              
               </div>
             </div>
           </div>
