@@ -21,8 +21,8 @@ const AskAINode: React.FC<AskAINodeProps> = ({ data, id }) => {
   return (
     <div className="bg-white rounded-lg shadow-md min-w-[32rem]">
       <Handle type="target" position={Position.Top} />
-      <div className="bg-indigo-50 p-4 rounded-t-lg flex items-center gap-3">
-        <div className="bg-indigo-600 text-white w-8 h-8 flex items-center justify-center rounded">
+      <div className="bg-pink-200 p-4 rounded-t-lg flex items-center gap-3">
+        <div className="bg-pink-400 text-white w-8 h-8 flex items-center justify-center rounded">
           AI
         </div>
         <div className="flex-grow">

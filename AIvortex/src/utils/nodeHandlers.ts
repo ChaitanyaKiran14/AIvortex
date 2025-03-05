@@ -23,5 +23,16 @@ export const nodeHandlers = {
       data: node.data,
     };
   },
+  linkedin: (node: Node) => {
+    console.log("Linkedin Working")
+    console.log(`Executing Linkedin Node: ${node.id}`);
+    return {
+      output: `AI Response: ${node.data.prompt}`,
+      nodeId: node.id,
+      type: node.type,
+      data: node.data,
+    };
+  
+  }
   // Update other handlers similarly
 };
