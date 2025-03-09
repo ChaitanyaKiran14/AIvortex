@@ -1,6 +1,7 @@
 # app/handlers/askai.py
 import httpx
 import os
+import json
 from app.models import Node
 
 async def execute(node: Node) -> str:
@@ -13,12 +14,33 @@ async def execute(node: Node) -> str:
     prompt = node.data.prompt or ""
     context = node.data.context or ""
     
+    # Get incoming data from previous nodes
+    previous_results = getattr(node.data, '_previous_results', [])
+    combined_input = ""
+    
+    if previous_results:
+        for result in previous_results:
+            try:
+                # Try to parse the result as JSON
+                data = json.loads(result)
+                if isinstance(data, dict):
+                    # Format JSON data for use in the prompt
+                    combined_input += json.dumps(data, indent=2) + "\n\n"
+                else:
+                    combined_input += result + "\n\n"
+            except (json.JSONDecodeError, ValueError, TypeError):
+                # Not JSON, use as plain text
+                combined_input += result + "\n\n"
+    
+    # Combine all inputs with the prompt and context
+    final_prompt = f"{context}\n{combined_input}\n{prompt}"
+    
     # Use the most recent model name
     model = "gemini-1.5-pro-latest"
     
     payload = {
         "contents": [
-            {"parts": [{"text": f"{context} {prompt}"}]}
+            {"parts": [{"text": final_prompt}]}
         ]
     }
     

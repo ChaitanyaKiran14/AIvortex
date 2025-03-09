@@ -6,8 +6,10 @@ import NodePalette from './Components/NodePalette';
 import { nodeHandlers } from './utils/nodeHandlers';
 import AskAINode from './Components/Nodes/AskAINode';
 import PDFNode from './Components/Nodes/PDFNode';
+import LinkedInNode from './Components/Nodes/LinkedInNode';
 import api from './services/api';
 import { Node, Edge, TransferData } from './types/types';
+import { IoPlayOutline } from "react-icons/io5";
 
 const App: React.FC = () => {
   const [showPalette, setShowPalette] = useState<boolean>(false);
@@ -71,6 +73,7 @@ const App: React.FC = () => {
   const nodeTypes = {
     askAI: AskAINode,
     pdfGenerator: PDFNode,
+    linkedIn: LinkedInNode,
    
   };
 
@@ -169,11 +172,14 @@ const App: React.FC = () => {
       </button> 
 
       <button
-        onClick={executeFlow}
-        className="absolute top-5 right-5 z-10 h-10 w-10 bg-pink-300 rounded-full text-pink-900 flex items-center justify-center p-7 font-medium hover:bg-pink-400 transition-colors"
-      >
-        ▶
-      </button>
+    onClick={executeFlow}
+    className="absolute top-5 right-5 z-10 h-10 bg-pink-300 rounded-full text-pink-900 flex items-center justify-center p-2 font-medium hover:bg-pink-400 transition-colors"
+  >
+    <div className="flex items-center space-x-2">
+      <IoPlayOutline className="text-xl" />
+      <span>RUN</span>
+    </div>
+  </button>
 
       {showPalette && (
         <NodePalette 
@@ -196,42 +202,6 @@ const App: React.FC = () => {
         <Controls />
         <Background variant="dots" gap={10} size={1} />
         <MiniMap/>
-
-         {/* Render action buttons for hovered node */}
-         {nodes.map((node) => (
-          hoveredNodeId === node.id && (
-            <div
-              key={node.id}
-              className="absolute z-10 flex gap-2 p-2 bg-white border border-gray-200 rounded shadow"
-              style={{
-                top: `${node.position.y + 50}px`,
-                left: `${node.position.x}px`,
-              }}
-            >
-              <button
-                onClick={() => duplicateNode(node.id)}
-                className="px-2 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200"
-              >
-                Duplicate
-              </button>
-              <button
-                onClick={() => {
-                  const newLabel = prompt('Enter new label:', node.data.label);
-                  if (newLabel) renameNode(node.id, newLabel);
-                }}
-                className="px-2 py-1 bg-green-100 text-green-800 rounded hover:bg-green-200"
-              >
-                Rename
-              </button>
-              <button
-                onClick={() => deleteNode(node.id)}
-                className="px-2 py-1 bg-red-100 text-red-800 rounded hover:bg-red-200"
-              >
-                Delete
-              </button>
-            </div>
-          )
-        ))}
 
 
 

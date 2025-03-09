@@ -12,16 +12,15 @@ from fastapi.staticfiles import StaticFiles
 load_dotenv()
 
 # Import all handlers for the various node types
-from app.handlers import askai, extract_data, summarizer, categorizer, analyzer, pdf_generator
+from app.handlers import askai, pdf_generator, linkedin
 
 app = FastAPI(debug=True)
 app.mount("/generated_pdfs", StaticFiles(directory="generated_pdfs"), name="generated_pdfs")
 
-
-
 # Define allowed origins – update this list if needed
 origins = [
     "http://localhost:5173",
+    "http://localhost:5174"
     "http://localhost:3000",  # Add any other origins you need
 ]
 
@@ -37,11 +36,8 @@ app.add_middleware(
 # Mapping of node types to their handler functions
 NODE_HANDLERS = {
     "askAI": askai.execute,
-    "extractData": extract_data.execute,
-    "summarizer": summarizer.execute,
-    "categorizer": categorizer.execute,
-    "analyzer": analyzer.execute,
     "pdfGenerator": pdf_generator.execute,
+    "linkedIn": linkedin.execute,  # Add LinkedIn handler
 }
 
 # Recursive function to execute a node and its children (DFS logic)
@@ -112,8 +108,12 @@ async def execute_workflow(workflow: Workflow):
 @app.get("/test-env")
 async def test_env():
     api_key = os.environ.get("GEMINI_API_KEY", "Not found")
+    li_at = os.environ.get("LI_AT", "Not found")
     # Return only the first few characters for security
-    return {"key_prefix": api_key[:5] + "..." if len(api_key) > 5 else "Not found"}
+    return {
+        "gemini_key_prefix": api_key[:5] + "..." if len(api_key) > 5 else "Not found",
+        "li_at_prefix": li_at[:5] + "..." if len(li_at) > 5 else "Not found"
+    }
 
 
 @app.get("/download-pdf/{filename}")
@@ -122,7 +122,6 @@ async def download_pdf(filename: str):
     if os.path.exists(file_path):
         return FileResponse(
             file_path,
-            
             media_type="application/pdf",
             filename=filename
         )

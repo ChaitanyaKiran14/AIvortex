@@ -1,8 +1,8 @@
+# app/handlers/pdf_generator.py
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib import colors
+import json
 from app.models import Node
 import os
 import uuid
@@ -22,7 +22,25 @@ async def execute(node: Node) -> str:
         
         # Get content from previous nodes
         previous_results = getattr(node.data, '_previous_results', [])
-        content = previous_results[-1] if previous_results else (node.data.content or "No content provided.")
+        content = ""
+        
+        # Combine all inputs
+        if previous_results:
+            for result in previous_results:
+                try:
+                    # Try to parse as JSON
+                    data = json.loads(result)
+                    if isinstance(data, dict):
+                        content += json.dumps(data, indent=2) + "\n\n"
+                    else:
+                        content += result + "\n\n"
+                except (json.JSONDecodeError, ValueError, TypeError):
+                    # Not JSON, use as plain text
+                    content += result + "\n\n"
+        
+        # If no content from previous nodes, use the node's content field
+        if not content:
+            content = node.data.content or "No content provided."
         
         # Create the PDF
         c = canvas.Canvas(pdf_path, pagesize=letter)

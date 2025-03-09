@@ -23,16 +23,14 @@ export const nodeHandlers = {
       data: node.data,
     };
   },
-  linkedin: (node: Node) => {
-    console.log("Linkedin Working")
-    console.log(`Executing Linkedin Node: ${node.id}`);
+  linkedIn: (node: Node) => {
+    console.log("LinkedIn Node Working");
+    console.log(`Executing LinkedIn Node: ${node.id}`);
     return {
-      output: `AI Response: ${node.data.prompt}`,
+      output: `LinkedIn Profile Data for URL: ${node.data.profileUrl}`,
       nodeId: node.id,
       type: node.type,
       data: node.data,
     };
-  
   }
-  // Update other handlers similarly
 };

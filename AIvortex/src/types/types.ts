@@ -4,6 +4,8 @@ export interface NodeData {
   context?: string;
   model?: string;
   content?: string;
+  profileUrl?: string;  
+
 }
 
 export interface Node {

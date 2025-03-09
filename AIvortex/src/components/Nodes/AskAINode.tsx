@@ -1,5 +1,5 @@
 import { Handle, Position } from '@xyflow/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NodeData } from '../../types/types';
 
 interface AskAINodeProps {
@@ -12,11 +12,12 @@ const AskAINode: React.FC<AskAINodeProps> = ({ data, id }) => {
   const [context, setContext] = useState<string>(data.context || '');
   const [model, setModel] = useState<string>(data.model || 'gemini-pro');
 
-  const updateNodeData = (): void => {
+  // Update node data immediately when state changes
+  useEffect(() => {
     data.prompt = prompt;
     data.context = context;
     data.model = model;
-  };
+  }, [prompt, context, model, data]);
 
   return (
     <div className="bg-white rounded-lg shadow-md min-w-[32rem]">
@@ -39,19 +40,17 @@ const AskAINode: React.FC<AskAINodeProps> = ({ data, id }) => {
             placeholder="Enter your prompt"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            onBlur={updateNodeData}
             className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           />
         </div>
 
         <div>
-          <label className="block font-medium mb-1">Context</label> 
+          <label className="block font-medium mb-1">Context</label>
           <input
             type="text"
             placeholder="Enter additional context"
             value={context}
             onChange={(e) => setContext(e.target.value)}
-            onBlur={updateNodeData}
             className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           />
         </div>
@@ -61,7 +60,6 @@ const AskAINode: React.FC<AskAINodeProps> = ({ data, id }) => {
           <select
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            onBlur={updateNodeData}
             className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           >
             <option value="gemini-pro">Gemini Pro</option>
