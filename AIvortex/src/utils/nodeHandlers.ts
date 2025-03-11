@@ -32,5 +32,15 @@ export const nodeHandlers = {
       type: node.type,
       data: node.data,
     };
+  },
+  typeform : (node: Node) => {
+    console.log("Typeform Node Working");
+    console.log(`Executing Typeform Node: ${node.id}`);
+    return {
+      output: `Typeform for formId: ${node.data.formId}`,
+      nodeId: node.id,
+      type: node.type,
+      data: node.data,
+    };
   }
 };

@@ -5,6 +5,9 @@ export interface NodeData {
   model?: string;
   content?: string;
   profileUrl?: string;  
+  formId?:string;
+  apiKey?:string
+
 
 }
 
