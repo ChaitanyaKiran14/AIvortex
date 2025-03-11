@@ -1,3 +1,4 @@
+# C:\AdvanceLearnings\AIvortex\Backend\app\main.py
 import uvicorn
 import os
 from fastapi import FastAPI, HTTPException
@@ -12,7 +13,7 @@ from fastapi.staticfiles import StaticFiles
 load_dotenv()
 
 # Import all handlers for the various node types
-from app.handlers import askai, pdf_generator, linkedin
+from app.handlers import askai, pdf_generator, linkedin, typeform
 
 app = FastAPI(debug=True)
 app.mount("/generated_pdfs", StaticFiles(directory="generated_pdfs"), name="generated_pdfs")
@@ -20,7 +21,7 @@ app.mount("/generated_pdfs", StaticFiles(directory="generated_pdfs"), name="gene
 # Define allowed origins – update this list if needed
 origins = [
     "http://localhost:5173",
-    "http://localhost:5174"
+    "http://localhost:5174",
     "http://localhost:3000",  # Add any other origins you need
 ]
 
@@ -37,7 +38,8 @@ app.add_middleware(
 NODE_HANDLERS = {
     "askAI": askai.execute,
     "pdfGenerator": pdf_generator.execute,
-    "linkedIn": linkedin.execute,  # Add LinkedIn handler
+    "linkedIn": linkedin.execute,
+    "typeform": typeform.execute,  # New Typeform handler mapping
 }
 
 # Recursive function to execute a node and its children (DFS logic)
@@ -65,7 +67,6 @@ async def execute_node_and_children(
             incoming_results.append(outputs[edge.source])
     
     # Store incoming results in node data for the handler to use
-    # Use setattr to add _previous_results to the Pydantic model
     setattr(node.data, '_previous_results', incoming_results)
     
     # Execute the node and store the result
@@ -80,7 +81,6 @@ async def execute_node_and_children(
             await execute_node_and_children(child_id, nodes_map, edges, executed, outputs)
     
     return result
-
 
 @app.post("/execute-workflow")
 async def execute_workflow(workflow: Workflow):
@@ -109,12 +109,10 @@ async def execute_workflow(workflow: Workflow):
 async def test_env():
     api_key = os.environ.get("GEMINI_API_KEY", "Not found")
     li_at = os.environ.get("LI_AT", "Not found")
-    # Return only the first few characters for security
     return {
         "gemini_key_prefix": api_key[:5] + "..." if len(api_key) > 5 else "Not found",
         "li_at_prefix": li_at[:5] + "..." if len(li_at) > 5 else "Not found"
     }
-
 
 @app.get("/download-pdf/{filename}")
 async def download_pdf(filename: str):
