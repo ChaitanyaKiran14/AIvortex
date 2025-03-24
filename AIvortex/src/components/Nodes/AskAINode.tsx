@@ -28,7 +28,7 @@ const AskAINode: React.FC<AskAINodeProps> = ({ data, id }) => {
         </div>
         <div className="flex-grow">
           <div className="text-gray-600 text-sm">Using AI</div>
-          <div className="text-gray-800 font-semibold">Ask Gemini AI</div>
+          <div className="text-gray-800 font-semibold">Ask AI Model</div>
         </div>
       </div>
 
@@ -65,6 +65,7 @@ const AskAINode: React.FC<AskAINodeProps> = ({ data, id }) => {
             <option value="gemini-pro">Gemini Pro</option>
             <option value="gemini-pro-vision">Gemini Pro Vision</option>
             <option value="gemini-ultra">Gemini Ultra</option>
+            <option value="deepseek-r1">Deepseek R1</option>
           </select>
         </div>
       </div>
