@@ -8,6 +8,7 @@ import AskAINode from './Components/Nodes/AskAINode';
 import PDFNode from './Components/Nodes/PDFNode';
 import LinkedInNode from './Components/Nodes/LinkedInNode';
 import TypeformNode from './Components/Nodes/TypeformNode';
+import CombineTextNode from './Components/Nodes/CombineTextNode';
 import api from './services/api';
 import { Node, Edge, TransferData } from './types/types';
 import { IoPlayOutline } from "react-icons/io5";
@@ -76,6 +77,7 @@ const App: React.FC = () => {
     pdfGenerator: PDFNode,
     linkedIn: LinkedInNode,
     typeform : TypeformNode,
+    combineText: CombineTextNode,
    
   };
 

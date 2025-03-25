@@ -42,5 +42,48 @@ export const nodeHandlers = {
       type: node.type,
       data: node.data,
     };
-  }
+  },
+
+  combineText: (node: Node, previousOutput?: string | string[]) => {
+    console.log(`Executing CombineText Node: ${node.id}`);
+    
+    let combinedOutput = "";
+    
+    // If previousOutput exists, it could be a string or an array of strings
+    if (previousOutput) {
+      if (Array.isArray(previousOutput)) {
+        // If it's an array, combine all outputs
+        previousOutput.forEach((output, index) => {
+          combinedOutput += `--- Source ${index + 1} ---\n${output}\n\n`;
+        });
+      } else {
+        // If it's a single string, use it directly
+        combinedOutput = `--- Source 1 ---\n${previousOutput}\n\n`;
+      }
+    } else {
+      combinedOutput = "No input data provided to CombineTextNode.";
+    }
+    
+    console.log(`Combined output:`, combinedOutput);
+    
+    return {
+      output: combinedOutput,
+      nodeId: node.id,
+      type: node.type,
+      data: node.data,
+    };
+  },
+
+
+
+
+
+
+
 };
+
+
+
+
+
+  

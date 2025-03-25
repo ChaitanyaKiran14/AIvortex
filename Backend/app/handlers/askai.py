@@ -3,6 +3,7 @@ import os
 import json
 from app.models import Node
 
+
 async def execute(node: Node) -> str:
     # Retrieve API keys from environment variables
     gemini_api_key = os.environ.get("GEMINI_API_KEY")

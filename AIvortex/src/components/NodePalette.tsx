@@ -55,6 +55,21 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
         }
       ]
     },
+
+    {
+      category: 'Data Processing',
+      description: 'Nodes for processing and combining data',
+      count: 1,
+      nodeIcon: '🔗',
+      items: [
+        {
+          id: 'combineText',
+          label: 'Combine Text',
+          type: 'combineText',
+          icon: '🔗',
+        },
+      ],
+    },
     
   ];
 
