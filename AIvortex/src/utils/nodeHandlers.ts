@@ -1,3 +1,4 @@
+// C:\AdvanceLearnings\AIvortex\AIVortex\src\utils\nodeHandlers.ts
 import { Node } from '../types/types';
 
 export const nodeHandlers = {
@@ -17,7 +18,7 @@ export const nodeHandlers = {
     const contentToUse = previousOutput || node.data.content || "No content provided";
     
     return {
-      output: `PDF Generated with content: ${contentToUse}`,
+      output: `PDF will be generated with content: ${contentToUse}`,
       nodeId: node.id,
       type: node.type,
       data: node.data,
@@ -33,7 +34,7 @@ export const nodeHandlers = {
       data: node.data,
     };
   },
-  typeform : (node: Node) => {
+  typeform: (node: Node) => {
     console.log("Typeform Node Working");
     console.log(`Executing Typeform Node: ${node.id}`);
     return {
@@ -43,21 +44,17 @@ export const nodeHandlers = {
       data: node.data,
     };
   },
-
   combineText: (node: Node, previousOutput?: string | string[]) => {
     console.log(`Executing CombineText Node: ${node.id}`);
     
     let combinedOutput = "";
     
-    // If previousOutput exists, it could be a string or an array of strings
     if (previousOutput) {
       if (Array.isArray(previousOutput)) {
-        // If it's an array, combine all outputs
         previousOutput.forEach((output, index) => {
           combinedOutput += `--- Source ${index + 1} ---\n${output}\n\n`;
         });
       } else {
-        // If it's a single string, use it directly
         combinedOutput = `--- Source 1 ---\n${previousOutput}\n\n`;
       }
     } else {
@@ -73,17 +70,31 @@ export const nodeHandlers = {
       data: node.data,
     };
   },
-
-
-
-
-
-
-
+  cultureFit: (node: Node) => {
+    console.log(`Executing CultureFit Node: ${node.id}`);
+    
+    const companyValues = node.data.companyValues || "Not provided";
+    const weights = node.data.weights || {
+      resourcefulness: 5,
+      optimism: 4,
+      excitement: 4,
+      reliability: 3,
+      teamwork: 3,
+    };
+    
+    const weightsString = Object.entries(weights)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join(', ');
+    
+    const output = `Company Values: ${companyValues}\nWeights: ${weightsString}`;
+    
+    console.log(`CultureFit output:`, output);
+    
+    return {
+      output,
+      nodeId: node.id,
+      type: node.type,
+      data: node.data,
+    };
+  },
 };
-
-
-
-
-
-  

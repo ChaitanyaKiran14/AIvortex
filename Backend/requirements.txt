@@ -8,3 +8,6 @@ selenium
 beautifulsoup4
 jupyter
 lxml
+reportlab==4.3.1
+matplotlib==3.10.1
+numpy==2.2.4

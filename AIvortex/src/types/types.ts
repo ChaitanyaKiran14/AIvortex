@@ -4,9 +4,14 @@ export interface NodeData {
   context?: string;
   model?: string;
   content?: string;
+  title?: string;
   profileUrl?: string;  
   formId?:string;
   apiKey?:string
+  companyValues?: string; 
+  weights?: { [key: string]: number };
+  cultureFitContext?: string;
+  _previous_results?: string[];
 
 
 }

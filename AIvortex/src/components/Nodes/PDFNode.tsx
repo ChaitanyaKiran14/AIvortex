@@ -1,6 +1,6 @@
+// C:\AdvanceLearnings\AIvortex\AIVortex\src\Components\Nodes\PDFNode.tsx
 import { Handle, Position } from '@xyflow/react';
-import { useState } from 'react';
-import { jsPDF } from 'jspdf';
+import { useState, useEffect } from 'react';
 import { NodeData } from '../../types/types';
 
 interface PDFNodeProps {
@@ -10,16 +10,13 @@ interface PDFNodeProps {
 
 const PDFNode: React.FC<PDFNodeProps> = ({ data, id }) => {
   const [content, setContent] = useState<string>(data.content || '');
+  const [title, setTitle] = useState<string>(data.title || 'Candidate Evaluation Report');
 
-  const generatePDF = (): void => {
-    const doc = new jsPDF();
-    doc.text(content, 10, 10);
-    doc.save(`output-${id}.pdf`);
-  };
-
-  const updateNodeData = (): void => {
+  // Update node data when content or title changes
+  useEffect(() => {
     data.content = content;
-  };
+    data.title = title;
+  }, [content, title, data]);
 
   return (
     <div className="bg-white rounded-lg shadow-md min-w-[32rem]">
@@ -36,26 +33,31 @@ const PDFNode: React.FC<PDFNodeProps> = ({ data, id }) => {
 
       <div className="p-4 space-y-4">
         <div>
+          <label className="block font-medium mb-1">PDF Title</label>
+          <input
+            type="text"
+            placeholder="Enter PDF title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+          />
+        </div>
+        <div>
           <label className="block font-medium mb-1">Content</label>
           <textarea
-              placeholder="Enter content for PDF"
-              value={content}
-              onChange={(e) => {
-                setContent(e.target.value);
-                updateNodeData();
-              }}
-              onBlur={updateNodeData}
-              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-pink-500 focus:border-transparent"
-              rows={4}
-            />
+            placeholder="Content will be populated from previous nodes"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-pink-500 focus:border-transparent"
+            rows={4}
+            readOnly={!!data._previous_results}
+          />
+          {data._previous_results && (
+            <p className="text-sm text-green-600 mt-1">
+              Content automatically populated from previous nodes
+            </p>
+          )}
         </div>
-
-        <button
-          onClick={generatePDF}
-          className="w-full bg-pink-200 text-white py-2 px-4 rounded hover:bg-pink-400 transition-colors"
-        >
-          Generate PDF
-        </button>
       </div>
       <Handle type="source" position={Position.Bottom} />
     </div>

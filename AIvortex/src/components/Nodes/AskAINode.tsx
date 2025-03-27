@@ -1,3 +1,4 @@
+// C:\AdvanceLearnings\AIvortex\AIVortex\src\Components\Nodes\AskAINode.tsx
 import { Handle, Position } from '@xyflow/react';
 import { useState, useEffect } from 'react';
 import { NodeData } from '../../types/types';
@@ -5,19 +6,31 @@ import { NodeData } from '../../types/types';
 interface AskAINodeProps {
   data: NodeData;
   id: string;
+  connectedCultureFitData?: string; // Optional prop to pass CultureFitNode data if connected
 }
 
-const AskAINode: React.FC<AskAINodeProps> = ({ data, id }) => {
+const AskAINode: React.FC<AskAINodeProps> = ({ data, id, connectedCultureFitData }) => {
   const [prompt, setPrompt] = useState<string>(data.prompt || '');
   const [context, setContext] = useState<string>(data.context || '');
   const [model, setModel] = useState<string>(data.model || 'gemini-pro');
 
-  // Update node data immediately when state changes
+  // Update node data immediately when state changes (original logic, untouched)
   useEffect(() => {
     data.prompt = prompt;
     data.context = context;
     data.model = model;
   }, [prompt, context, model, data]);
+
+  // Update context based on connected CultureFitNode
+  useEffect(() => {
+    if (connectedCultureFitData) {
+      setContext(connectedCultureFitData);
+      data.context = connectedCultureFitData;
+    } else {
+      setContext(data.context || '');
+      data.context = data.context || '';
+    }
+  }, [connectedCultureFitData, data]);
 
   return (
     <div className="bg-white rounded-lg shadow-md min-w-[32rem]">
@@ -48,11 +61,19 @@ const AskAINode: React.FC<AskAINodeProps> = ({ data, id }) => {
           <label className="block font-medium mb-1">Context</label>
           <input
             type="text"
-            placeholder="Enter additional context"
+            placeholder="Enter additional context (or automatically populated from Culture Fit Node)"
             value={context}
             onChange={(e) => setContext(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className={`w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+              connectedCultureFitData ? 'bg-gray-100' : ''
+            }`}
+            readOnly={!!connectedCultureFitData} // Make readonly if CultureFitNode is connected
           />
+          {connectedCultureFitData && (
+            <p className="text-sm text-green-600 mt-1">
+              Context automatically populated from Culture Fit Node
+            </p>
+          )}
         </div>
 
         <div>

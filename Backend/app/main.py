@@ -14,7 +14,7 @@ from fastapi.staticfiles import StaticFiles
 load_dotenv()
 
 # Import all handlers for the various node types
-from app.handlers import askai, pdf_generator, linkedin, typeform, combine_text
+from app.handlers import askai, pdf_generator, linkedin, typeform, combine_text, culture_fit
 
 app = FastAPI(debug=True)
 app.mount("/generated_pdfs", StaticFiles(directory="generated_pdfs"), name="generated_pdfs")
@@ -23,7 +23,7 @@ app.mount("/generated_pdfs", StaticFiles(directory="generated_pdfs"), name="gene
 origins = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "http://localhost:3000",  # Add any other origins you need
+    "http://localhost:3000",
 ]
 
 # Configure CORS middleware
@@ -42,6 +42,7 @@ NODE_HANDLERS = {
     "linkedIn": linkedin.execute,
     "typeform": typeform.execute,
     "combineText": combine_text.execute,
+    "cultureFit": culture_fit.execute,  # Add CultureFit handler
 }
 
 # Debug: Log the NODE_HANDLERS keys to confirm combineText is present
@@ -56,7 +57,7 @@ async def execute_node_and_children(
     outputs: dict,
     executing: set = None,
     scheduled: set = None,
-    execute_children: bool = True,  # Control whether to execute child nodes
+    execute_children: bool = True,
 ):
     if executing is None:
         executing = set()
@@ -112,10 +113,29 @@ async def execute_node_and_children(
             await asyncio.gather(*parent_tasks)
             print(f"All parent tasks for node {node_id} completed")
     
-    # Get incoming node results from all parent nodes
+    # Check if the node is an AskAINode and has a CultureFitNode as a parent
+    if node.type == "askAI":
+        culture_fit_parent = None
+        for parent_id in parent_nodes:
+            parent_node = nodes_map[parent_id]
+            if parent_node.type == "cultureFit" and parent_id in outputs:
+                culture_fit_parent = parent_id
+                break
+        
+        if culture_fit_parent:
+            print(f"Found CultureFitNode parent {culture_fit_parent} for AskAINode {node_id}")
+            node.data.context = outputs[culture_fit_parent]
+            print(f"Set context for AskAINode {node_id} to: {node.data.context}")
+        else:
+            print(f"No CultureFitNode parent found for AskAINode {node_id}, using existing context: {node.data.context}")
+    
+    # Get incoming node results from all parent nodes (excluding CultureFitNode for AskAINode prompt)
     incoming_results = []
     for edge in edges:
         if edge.target == node_id:
+            source_node = nodes_map[edge.source]
+            if node.type == "askAI" and source_node.type == "cultureFit":
+                continue  # Skip CultureFitNode output for incoming_results
             if edge.source in outputs:
                 incoming_results.append(outputs[edge.source])
             else:
@@ -229,7 +249,6 @@ async def execute_workflow(workflow: Workflow):
         print(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
-# Test endpoint to verify that environment variables are loaded correctly
 @app.get("/test-env")
 async def test_env():
     api_key = os.environ.get("GEMINI_API_KEY", "Not found")

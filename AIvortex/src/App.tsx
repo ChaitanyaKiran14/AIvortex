@@ -3,12 +3,12 @@ import React, { useState, useCallback } from 'react';
 import { ReactFlow, Controls, Background, useNodesState, useEdgesState, addEdge, MiniMap, getIncomers, getOutgoers } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import NodePalette from './Components/NodePalette';
-import { nodeHandlers } from './utils/nodeHandlers';
 import AskAINode from './Components/Nodes/AskAINode';
 import PDFNode from './Components/Nodes/PDFNode';
 import LinkedInNode from './Components/Nodes/LinkedInNode';
 import TypeformNode from './Components/Nodes/TypeformNode';
 import CombineTextNode from './Components/Nodes/CombineTextNode';
+import CultureFitNode from './Components/Nodes/CultureFitNode'; // Add CultureFitNode import
 import api from './services/api';
 import { Node, Edge, TransferData } from './types/types';
 import { IoPlayOutline } from "react-icons/io5";
@@ -18,8 +18,6 @@ const App: React.FC = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
-
-
 
   const findStartNodes = useCallback((nodes: Node[], edges: Edge[]): Node[] => {
     return nodes.filter((node) => {
@@ -76,9 +74,9 @@ const App: React.FC = () => {
     askAI: AskAINode,
     pdfGenerator: PDFNode,
     linkedIn: LinkedInNode,
-    typeform : TypeformNode,
+    typeform: TypeformNode,
     combineText: CombineTextNode,
-   
+    cultureFit: CultureFitNode, // Add CultureFitNode to nodeTypes
   };
 
   const onConnect = useCallback(
@@ -125,8 +123,7 @@ const App: React.FC = () => {
     event.dataTransfer.dropEffect = 'move';
   };
 
-   // Handle node hover
-   const onNodeMouseEnter = useCallback((event: React.MouseEvent, node: Node) => {
+  const onNodeMouseEnter = useCallback((event: React.MouseEvent, node: Node) => {
     setHoveredNodeId(node.id);
   }, []);
 
@@ -134,7 +131,6 @@ const App: React.FC = () => {
     setHoveredNodeId(null);
   }, []);
 
-  // Duplicate Node
   const duplicateNode = useCallback((nodeId: string) => {
     setNodes((nds) => {
       const nodeToDuplicate = nds.find((n) => n.id === nodeId);
@@ -150,22 +146,16 @@ const App: React.FC = () => {
     });
   }, [setNodes]);
 
-  // Rename Node
   const renameNode = useCallback((nodeId: string, newLabel: string) => {
     setNodes((nds) =>
       nds.map((n) => (n.id === nodeId ? { ...n, data: { ...n.data, label: newLabel } } : n))
     );
   }, [setNodes]);
 
-  // Delete Node
   const deleteNode = useCallback((nodeId: string) => {
     setNodes((nds) => nds.filter((n) => n.id !== nodeId));
     setEdges((eds) => eds.filter((e) => e.source !== nodeId && e.target !== nodeId));
   }, [setNodes, setEdges]);
-
-  
-
-
 
   return (
     <div className='w-screen h-screen'>
@@ -177,14 +167,14 @@ const App: React.FC = () => {
       </button> 
 
       <button
-    onClick={executeFlow}
-    className="absolute top-5 right-5 z-10 h-10 bg-pink-300 rounded-full text-pink-900 flex items-center justify-center p-2 font-medium hover:bg-pink-400 transition-colors"
-  >
-    <div className="flex items-center space-x-2">
-      <IoPlayOutline className="text-xl" />
-      <span>RUN</span>
-    </div>
-  </button>
+        onClick={executeFlow}
+        className="absolute top-5 right-5 z-10 h-10 bg-pink-300 rounded-full text-pink-900 flex items-center justify-center p-2 font-medium hover:bg-pink-400 transition-colors"
+      >
+        <div className="flex items-center space-x-2">
+          <IoPlayOutline className="text-xl" />
+          <span>RUN</span>
+        </div>
+      </button>
 
       {showPalette && (
         <NodePalette 
@@ -207,10 +197,6 @@ const App: React.FC = () => {
         <Controls />
         <Background variant="dots" gap={10} size={1} />
         <MiniMap/>
-
-
-
-
       </ReactFlow>
     </div>
   );
