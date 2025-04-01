@@ -1,4 +1,3 @@
-// C:\AdvanceLearnings\AIvortex\AIVortex\src\Components\Nodes\LinkedInNode.tsx
 import { Handle, Position } from '@xyflow/react';
 import { useState, useEffect } from 'react';
 import { NodeData } from '../../types/types';
@@ -12,7 +11,7 @@ const LinkedInNode: React.FC<LinkedInNodeProps> = ({ data, id }) => {
   const [profileUrl, setProfileUrl] = useState<string>(data.profileUrl || '');
   const [urlError, setUrlError] = useState<string>('');
 
-  // Validate LinkedIn URL format
+  
   const validateUrl = (url: string) => {
     const linkedInRegex = /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$/;
     if (!url) {
@@ -24,7 +23,6 @@ const LinkedInNode: React.FC<LinkedInNodeProps> = ({ data, id }) => {
     }
   };
 
-  // Update node data and validate on change
   useEffect(() => {
     validateUrl(profileUrl);
     data.profileUrl = profileUrl;
