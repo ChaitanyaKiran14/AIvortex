@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 generated_pdfs
+generated_charts
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
