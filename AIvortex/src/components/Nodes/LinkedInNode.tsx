@@ -1,5 +1,6 @@
+// C:\AdvanceLearnings\AIvortex\AIVortex\src\Components\Nodes\LinkedInNode.tsx
 import { Handle, Position } from '@xyflow/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NodeData } from '../../types/types';
 
 interface LinkedInNodeProps {
@@ -9,11 +10,25 @@ interface LinkedInNodeProps {
 
 const LinkedInNode: React.FC<LinkedInNodeProps> = ({ data, id }) => {
   const [profileUrl, setProfileUrl] = useState<string>(data.profileUrl || '');
+  const [urlError, setUrlError] = useState<string>('');
 
-  const updateNodeData = (): void => {
-    data.profileUrl = profileUrl;
-    
+  // Validate LinkedIn URL format
+  const validateUrl = (url: string) => {
+    const linkedInRegex = /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$/;
+    if (!url) {
+      setUrlError('LinkedIn profile URL is required.');
+    } else if (!linkedInRegex.test(url)) {
+      setUrlError('Please enter a valid LinkedIn profile URL (e.g., https://www.linkedin.com/in/username/).');
+    } else {
+      setUrlError('');
+    }
   };
+
+  // Update node data and validate on change
+  useEffect(() => {
+    validateUrl(profileUrl);
+    data.profileUrl = profileUrl;
+  }, [profileUrl, data]);
 
   return (
     <div className="bg-white rounded-lg shadow-md min-w-[32rem]">
@@ -36,9 +51,11 @@ const LinkedInNode: React.FC<LinkedInNodeProps> = ({ data, id }) => {
             placeholder="https://www.linkedin.com/in/username/"
             value={profileUrl}
             onChange={(e) => setProfileUrl(e.target.value)}
-            onBlur={updateNodeData}
-            className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              urlError ? 'border-red-500' : 'border-gray-300'
+            }`}
           />
+          {urlError && <p className="text-sm text-red-600 mt-1">{urlError}</p>}
         </div>
       </div>
       <Handle type="source" position={Position.Bottom} />
