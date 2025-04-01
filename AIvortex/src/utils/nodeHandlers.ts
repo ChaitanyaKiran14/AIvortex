@@ -1,4 +1,3 @@
-// C:\AdvanceLearnings\AIvortex\AIVortex\src\utils\nodeHandlers.ts
 import { Node } from '../types/types';
 
 export const nodeHandlers = {

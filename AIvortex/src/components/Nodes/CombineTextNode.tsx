@@ -1,4 +1,3 @@
-// C:\AdvanceLearnings\AIvortex\AIVortex\src\Components\Nodes\CombineTextNode.tsx
 import { Handle, Position } from '@xyflow/react';
 import { NodeData } from '../../types/types';
 

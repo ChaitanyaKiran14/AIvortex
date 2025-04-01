@@ -8,7 +8,7 @@ import PDFNode from './Components/Nodes/PDFNode';
 import LinkedInNode from './Components/Nodes/LinkedInNode';
 import TypeformNode from './Components/Nodes/TypeformNode';
 import CombineTextNode from './Components/Nodes/CombineTextNode';
-import CultureFitNode from './Components/Nodes/CultureFitNode'; // Add CultureFitNode import
+import CultureFitNode from './Components/Nodes/CultureFitNode';
 import api from './services/api';
 import { Node, Edge, TransferData } from './types/types';
 import { IoPlayOutline } from "react-icons/io5";
@@ -17,7 +17,7 @@ const App: React.FC = () => {
   const [showPalette, setShowPalette] = useState<boolean>(false);
   const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
-  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  
 
   const findStartNodes = useCallback((nodes: Node[], edges: Edge[]): Node[] => {
     return nodes.filter((node) => {
@@ -76,7 +76,7 @@ const App: React.FC = () => {
     linkedIn: LinkedInNode,
     typeform: TypeformNode,
     combineText: CombineTextNode,
-    cultureFit: CultureFitNode, // Add CultureFitNode to nodeTypes
+    cultureFit: CultureFitNode, 
   };
 
   const onConnect = useCallback(
@@ -123,40 +123,6 @@ const App: React.FC = () => {
     event.dataTransfer.dropEffect = 'move';
   };
 
-  const onNodeMouseEnter = useCallback((event: React.MouseEvent, node: Node) => {
-    setHoveredNodeId(node.id);
-  }, []);
-
-  const onNodeMouseLeave = useCallback(() => {
-    setHoveredNodeId(null);
-  }, []);
-
-  const duplicateNode = useCallback((nodeId: string) => {
-    setNodes((nds) => {
-      const nodeToDuplicate = nds.find((n) => n.id === nodeId);
-      if (nodeToDuplicate) {
-        const newNode = {
-          ...nodeToDuplicate,
-          id: `${nodeToDuplicate.type}-${Date.now()}`,
-          position: { x: nodeToDuplicate.position.x + 50, y: nodeToDuplicate.position.y + 50 },
-        };
-        return nds.concat(newNode);
-      }
-      return nds;
-    });
-  }, [setNodes]);
-
-  const renameNode = useCallback((nodeId: string, newLabel: string) => {
-    setNodes((nds) =>
-      nds.map((n) => (n.id === nodeId ? { ...n, data: { ...n.data, label: newLabel } } : n))
-    );
-  }, [setNodes]);
-
-  const deleteNode = useCallback((nodeId: string) => {
-    setNodes((nds) => nds.filter((n) => n.id !== nodeId));
-    setEdges((eds) => eds.filter((e) => e.source !== nodeId && e.target !== nodeId));
-  }, [setNodes, setEdges]);
-
   return (
     <div className='w-screen h-screen'>
       <button
@@ -192,7 +158,6 @@ const App: React.FC = () => {
         onConnect={onConnect}
         onDrop={onDrop}
         onDragOver={onDragOver}
-        onNodeMouseLeave={onNodeMouseLeave}
       >
         <Controls />
         <Background variant="dots" gap={10} size={1} />

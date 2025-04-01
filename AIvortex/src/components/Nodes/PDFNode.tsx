@@ -1,4 +1,3 @@
-// C:\AdvanceLearnings\AIvortex\AIVortex\src\Components\Nodes\PDFNode.tsx
 import { Handle, Position } from '@xyflow/react';
 import { useState, useEffect } from 'react';
 import { NodeData } from '../../types/types';
@@ -12,7 +11,7 @@ const PDFNode: React.FC<PDFNodeProps> = ({ data, id }) => {
   const [content, setContent] = useState<string>(data.content || '');
   const [title, setTitle] = useState<string>(data.title || 'Candidate Evaluation Report');
 
-  // Update node data when content or title changes
+
   useEffect(() => {
     data.content = content;
     data.title = title;

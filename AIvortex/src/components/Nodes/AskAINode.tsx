@@ -1,4 +1,3 @@
-// C:\AdvanceLearnings\AIvortex\AIVortex\src\Components\Nodes\AskAINode.tsx
 import { Handle, Position } from '@xyflow/react';
 import { useState, useEffect } from 'react';
 import { NodeData } from '../../types/types';
@@ -6,7 +5,7 @@ import { NodeData } from '../../types/types';
 interface AskAINodeProps {
   data: NodeData;
   id: string;
-  connectedCultureFitData?: string; // Optional prop to pass CultureFitNode data if connected
+  connectedCultureFitData?: string; 
 }
 
 const AskAINode: React.FC<AskAINodeProps> = ({ data, id, connectedCultureFitData }) => {
@@ -14,14 +13,13 @@ const AskAINode: React.FC<AskAINodeProps> = ({ data, id, connectedCultureFitData
   const [context, setContext] = useState<string>(data.context || '');
   const [model, setModel] = useState<string>(data.model || 'gemini-pro');
 
-  // Update node data immediately when state changes (original logic, untouched)
+ 
   useEffect(() => {
     data.prompt = prompt;
     data.context = context;
     data.model = model;
   }, [prompt, context, model, data]);
 
-  // Update context based on connected CultureFitNode
   useEffect(() => {
     if (connectedCultureFitData) {
       setContext(connectedCultureFitData);
@@ -67,7 +65,7 @@ const AskAINode: React.FC<AskAINodeProps> = ({ data, id, connectedCultureFitData
             className={`w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
               connectedCultureFitData ? 'bg-gray-100' : ''
             }`}
-            readOnly={!!connectedCultureFitData} // Make readonly if CultureFitNode is connected
+            readOnly={!!connectedCultureFitData}
           />
           {connectedCultureFitData && (
             <p className="text-sm text-green-600 mt-1">

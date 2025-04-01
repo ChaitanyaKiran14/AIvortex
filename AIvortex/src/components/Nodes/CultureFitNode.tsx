@@ -1,4 +1,3 @@
-// C:\AdvanceLearnings\AIvortex\AIVortex\src\Components\Nodes\CultureFitNode.tsx
 import { Handle, Position } from '@xyflow/react';
 import { useState, useEffect } from 'react';
 import { NodeData } from '../../types/types';
@@ -27,7 +26,6 @@ const CultureFitNode: React.FC<CultureFitNodeProps> = ({ data, id }) => {
     return `Company Values: ${companyValues}\nWeights: ${weightsString}`;
   };
 
-  // Validate inputs and update node data
   useEffect(() => {
     if (!companyValues.trim()) {
       setError('Company values cannot be empty.');
@@ -41,7 +39,7 @@ const CultureFitNode: React.FC<CultureFitNodeProps> = ({ data, id }) => {
   }, [companyValues, weights, data]);
 
   const handleWeightChange = (key: string, value: number) => {
-    if (value < 1 || value > 10) return; // Ensure weights are within range
+    if (value < 1 || value > 10) return; 
     const newWeights = { ...weights, [key]: value };
     setWeights(newWeights);
   };

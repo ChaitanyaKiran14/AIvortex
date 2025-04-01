@@ -1,4 +1,3 @@
-// C:\AdvanceLearnings\AIvortex\AIVortex\src\Components\NodePalette.tsx
 import React from "react";
 import { Search, X } from "lucide-react";
 import { PaletteNode, PaletteItem } from '../types/types';
@@ -90,7 +89,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
 
   return (
     <div className="fixed top-5 left-5 z-10 w-[340px] max-w-2xl h-[calc(100vh-40px)] bg-white rounded-lg shadow-lg flex flex-col">
-      {/* Header section */}
+
       <div className="flex-none border-b border-gray-100">
         <div className="flex items-center justify-between px-4 pt-4">
           <div className="flex gap-4">
@@ -121,7 +120,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
         </div>
       </div>
 
-      {/* Scrollable content section */}
+      
       <div className="flex-1 overflow-y-auto min-h-0 bg-gray-50">
         {paletteNodes.map((category, index) => (
           <div key={index} className="p-4">
