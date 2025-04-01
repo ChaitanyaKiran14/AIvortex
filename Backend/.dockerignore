@@ -1,0 +1,31 @@
+# Ignore node_modules
+node_modules
+
+# Ignore logs
+*.log
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore build outputs
+dist
+build
+
+# Ignore temporary files
+*.tmp
+*.swp
+
+# Ignore Docker-related files
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+
+# Ignore version control files
+.git
+.gitignore
+
+# Ignore IDE/editor files
+*.vscode
+*.idea
+*.DS_Store

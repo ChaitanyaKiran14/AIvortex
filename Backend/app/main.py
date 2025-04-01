@@ -1,4 +1,3 @@
-# C:\AdvanceLearnings\AIvortex\Backend\app\main.py
 import uvicorn
 import os
 import asyncio
@@ -10,23 +9,20 @@ from dotenv import load_dotenv
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-# Load environment variables from .env file
 load_dotenv()
 
-# Import all handlers for the various node types
 from app.handlers import askai, pdf_generator, linkedin, typeform, combine_text, culture_fit
 
 app = FastAPI(debug=True)
 app.mount("/generated_pdfs", StaticFiles(directory="generated_pdfs"), name="generated_pdfs")
 
-# Define allowed origins – update this list if needed
+
 origins = [
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:3000",
 ]
 
-# Configure CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -35,17 +31,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mapping of node types to their handler functions
 NODE_HANDLERS = {
     "askAI": askai.execute,
     "pdfGenerator": pdf_generator.execute,
     "linkedIn": linkedin.execute,
     "typeform": typeform.execute,
     "combineText": combine_text.execute,
-    "cultureFit": culture_fit.execute,  # Add CultureFit handler
+    "cultureFit": culture_fit.execute,  
 }
 
-# Debug: Log the NODE_HANDLERS keys to confirm combineText is present
+
 print("NODE_HANDLERS keys:", list(NODE_HANDLERS.keys()))
 
 # Recursive function to execute a node and its children (DFS logic)
