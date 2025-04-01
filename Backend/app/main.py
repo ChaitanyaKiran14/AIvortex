@@ -43,7 +43,6 @@ NODE_HANDLERS = {
 
 print("NODE_HANDLERS keys:", list(NODE_HANDLERS.keys()))
 
-# Recursive function to execute a node and its children (DFS logic)
 async def execute_node_and_children(
     node_id: str,
     nodes_map: dict,
@@ -59,39 +58,31 @@ async def execute_node_and_children(
     if scheduled is None:
         scheduled = set()
     
-    # Return if already executed
     if node_id in executed:
         print(f"Node {node_id} already executed, returning result: {outputs[node_id]}")
         return outputs[node_id]
     
-    # Check for circular dependencies and already executing nodes
     if node_id in executing:
         raise HTTPException(status_code=400, detail=f"Circular dependency detected for node: {node_id}")
     
-    # Mark as currently executing
     executing.add(node_id)
     
     node: Node = nodes_map[node_id]
     
-    # Debug: Log the node being executed
     print(f"Starting execution of node: {node_id}, Type: {node.type}")
     
-    # Get the appropriate handler for the node type
     handler = NODE_HANDLERS.get(node.type)
     if not handler:
         executing.remove(node_id)
         raise HTTPException(status_code=400, detail=f"No handler for node type: {node.type}")
     
-    # Find all parent nodes that need to be executed first
     parent_nodes = []
     for edge in edges:
         if edge.target == node_id:
             parent_nodes.append(edge.source)
     
-    # Debug: Log parent nodes
     print(f"Parent nodes for {node_id}: {parent_nodes}")
     
-    # Execute all parent nodes concurrently and wait for them to complete
     if parent_nodes:
         parent_tasks = []
         for parent_id in parent_nodes:
@@ -108,7 +99,6 @@ async def execute_node_and_children(
             await asyncio.gather(*parent_tasks)
             print(f"All parent tasks for node {node_id} completed")
     
-    # Check if the node is an AskAINode and has a CultureFitNode as a parent
     if node.type == "askAI":
         culture_fit_parent = None
         for parent_id in parent_nodes:
@@ -124,47 +114,38 @@ async def execute_node_and_children(
         else:
             print(f"No CultureFitNode parent found for AskAINode {node_id}, using existing context: {node.data.context}")
     
-    # Get incoming node results from all parent nodes (excluding CultureFitNode for AskAINode prompt)
     incoming_results = []
     for edge in edges:
         if edge.target == node_id:
             source_node = nodes_map[edge.source]
             if node.type == "askAI" and source_node.type == "cultureFit":
-                continue  # Skip CultureFitNode output for incoming_results
+                continue
             if edge.source in outputs:
                 incoming_results.append(outputs[edge.source])
             else:
                 print(f"Warning: Parent node {edge.source} for node {node_id} has not completed execution or result is missing in outputs")
     
-    # Debug: Log the incoming results
     print(f"Incoming results for node {node_id}: {incoming_results}")
     
-    # Store incoming results in node data for the handler to use
     setattr(node.data, '_previous_results', incoming_results)
     
-    # Execute the node and store the result
     print(f"Executing handler for node {node_id}")
     result = await handler(node)
     outputs[node_id] = result
     executed.add(node_id)
     
-    # Debug: Log the result
     print(f"Node {node_id} executed, result: {result}")
     
-    # Remove from currently executing set
     executing.remove(node_id)
     
-    # Process child nodes only if execute_children is True
     if not execute_children:
         print(f"Skipping child execution for node {node_id}")
         return result
     
     children_ids = get_outgoers(node_id, edges)
     
-    # Debug: Log child nodes
     print(f"Child nodes for {node_id}: {children_ids}")
     
-    # Schedule child nodes
     child_tasks = []
     for child_id in children_ids:
         if child_id not in executed and child_id not in scheduled:
@@ -185,7 +166,6 @@ async def execute_node_and_children(
 @app.post("/execute-workflow")
 async def execute_workflow(workflow: Workflow):
     try:
-        # Debug: Log all node types in the workflow
         print("Nodes in workflow:")
         for node in workflow.nodes:
             print(f"Node ID: {node.id}, Type: {node.type}")
@@ -199,7 +179,6 @@ async def execute_workflow(workflow: Workflow):
         executed = set()
         scheduled = set()
 
-        # Step 1: Execute all start nodes without scheduling their children
         start_tasks = []
         for node in start_nodes:
             if node.id not in scheduled:
@@ -214,13 +193,11 @@ async def execute_workflow(workflow: Workflow):
         await asyncio.gather(*start_tasks)
         print("All start tasks completed")
 
-        # Step 2: Collect all child nodes of start nodes
         start_node_children = set()
         for node in start_nodes:
             children_ids = get_outgoers(node.id, workflow.edges)
             start_node_children.update(children_ids)
 
-        # Step 3: Execute all child nodes of start nodes
         child_tasks = []
         for child_id in start_node_children:
             if child_id not in executed and child_id not in scheduled:

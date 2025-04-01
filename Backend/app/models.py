@@ -14,7 +14,7 @@ class NodeData(BaseModel):
     
     class Config:
         arbitrary_types_allowed = True
-        extra = "allow"  # Allow additional fields
+        extra = "allow"  
         
 
 class Node(BaseModel):

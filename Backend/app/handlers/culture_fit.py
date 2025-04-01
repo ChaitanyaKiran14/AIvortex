@@ -2,12 +2,11 @@ import json
 import logging
 from app.models import Node
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 
 async def execute(node: Node) -> str:
     try:
-        # Get company values and weights from node data
+       
         company_values: str = getattr(node.data, "companyValues", "")
         weights: dict = getattr(node.data, "weights", {
             "resourcefulness": 5,
@@ -17,7 +16,7 @@ async def execute(node: Node) -> str:
             "teamwork": 3
         })
 
-        # Validate inputs
+        
         if not company_values.strip():
             logging.error("CultureFitNode: Company values cannot be empty.")
             return "Error: Company values cannot be empty."
@@ -31,7 +30,7 @@ async def execute(node: Node) -> str:
                 logging.error(f"CultureFitNode: Invalid weight for {key}: {value}. Must be between 1 and 10.")
                 return f"Error: Invalid weight for {key}: {value}. Must be between 1 and 10."
 
-        # Format the culture fit data as a string
+        
         weights_string = ", ".join([f"{key}: {value}" for key, value in weights.items()])
         culture_fit_data = f"Company Values: {company_values}\nWeights: {weights_string}"
 
