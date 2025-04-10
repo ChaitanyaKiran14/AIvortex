@@ -113,7 +113,7 @@ async def execute(node: Node) -> str:
             story.append(Spacer(1, 12))
 
         doc.build(story)
-        return f"PDF generated successfully at {pdf_path}"
+        return f"PDF generated successfully at {pdf_filename}"  # Return only the filename
 
     except Exception as e:
         return f"Error generating PDF: {str(e)}"

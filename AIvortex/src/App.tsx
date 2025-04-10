@@ -32,7 +32,7 @@ const App: React.FC = () => {
 
   const downloadPDF = async (pdfPath: string): Promise<void> => {
     try {
-      const filename = pdfPath.split('\\').pop();
+      const filename = pdfPath.split('/').pop(); // Extract filename from path
       const response = await api.get(`/download-pdf/${filename}`, { responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -44,9 +44,10 @@ const App: React.FC = () => {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Error downloading PDF:", error);
+      throw error;
     }
   };
-
+  
   const executeFlow = async (): Promise<void> => {
     if (nodes.length === 0) {
       console.log("No nodes to execute.");
@@ -58,10 +59,11 @@ const App: React.FC = () => {
     try {
       const response = await api.post("/execute-workflow", workflowPayload);
       console.log("Workflow execution results:", response.data.results);
-
+  
       Object.entries(response.data.results).forEach(([nodeId, result]) => {
         if (nodeId.includes('pdf') && result.includes('PDF generated successfully at')) {
           const pdfPath = result.split('PDF generated successfully at ')[1];
+          console.log("Extracted PDF path:", pdfPath);
           downloadPDF(pdfPath);
         }
       });
@@ -69,6 +71,8 @@ const App: React.FC = () => {
       console.error("Error executing workflow:", error.response?.data || error.message);
     }
   };
+
+ 
 
   const nodeTypes = {
     askAI: AskAINode,
