@@ -11,20 +11,20 @@ import {
   Connection,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import NodePalette from './Components/NodePalette';
-import AskAINode from './Components/Nodes/AskAINode';
-import PDFNode from './Components/Nodes/PDFNode';
-import LinkedInNode from './Components/Nodes/LinkedInNode';
-import TypeformNode from './Components/Nodes/TypeformNode';
-import CombineTextNode from './Components/Nodes/CombineTextNode';
-import CultureFitNode from './Components/Nodes/CultureFitNode';
+import NodePalette from './components/NodePalette';
+import AskAINode from './components/Nodes/AskAINode';
+import PDFNode from './components/Nodes/PDFNode';
+import LinkedInNode from './components/Nodes/LinkedInNode';
+import TypeformNode from './components/Nodes/TypeformNode';
+import CombineTextNode from './components/Nodes/CombineTextNode';
+import CultureFitNode from './components/Nodes/CultureFitNode';
 import api from './services/api';
 import { Node, Edge, TransferData } from './types/types';
 import { IoPlayOutline } from "react-icons/io5";
 
 const App: React.FC = () => {
   const [showPalette, setShowPalette] = useState<boolean>(false);
-  
+
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 

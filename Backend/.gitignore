@@ -45,3 +45,4 @@ poetry.lock
 dist/
 build/
 *.egg-info/
+aivortex-backend.pem
