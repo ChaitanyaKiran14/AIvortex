@@ -23,10 +23,7 @@ import { Node, Edge, TransferData } from './types/types';
 import { IoPlayOutline } from "react-icons/io5";
 
 const App: React.FC = () => {
-  // Define state for showing the palette
   const [showPalette, setShowPalette] = useState<boolean>(false);
-
-  // Use the single item type for nodes and edges
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
@@ -161,7 +158,6 @@ const App: React.FC = () => {
         onDragOver={onDragOver}
       >
         <Controls />
-        {/* Use a valid variant from BackgroundVariant */}
         <Background variant={BackgroundVariant.Dots} gap={10} size={1} />
         <MiniMap/>
       </ReactFlow>

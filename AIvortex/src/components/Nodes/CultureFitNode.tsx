@@ -18,7 +18,6 @@ const CultureFitNode: React.FC<CultureFitNodeProps> = ({ data}) => {
   });
   const [error, setError] = useState<string>('');
 
-  // Format the culture fit data as a string for use as context
   const formatCultureFitData = () => {
     const weightsString = Object.entries(weights)
       .map(([key, value]) => `${key}: ${value}`)

@@ -14,17 +14,15 @@ export interface NodeData {
   weights?: { [key: string]: number };
   cultureFitContext?: string;
   _previous_results?: string[];
-  [key: string]: unknown; // Add this to make it compatible with Record<string, unknown>
+  [key: string]: unknown; 
 }
 
-// Extend ReactFlow's Node type
 export interface Node extends ReactFlowNode<NodeData> {
-  type: string; // Make sure type is required, not optional
+  type: string; 
 }
 
-// Extend ReactFlow's Edge type
 export interface Edge extends ReactFlowEdge {
-  // Add any custom edge properties here if needed
+  
 }
 
 export interface TransferData {
