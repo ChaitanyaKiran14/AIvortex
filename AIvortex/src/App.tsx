@@ -1,6 +1,15 @@
-
 import React, { useState, useCallback } from 'react';
-import { ReactFlow, Controls, Background, useNodesState, useEdgesState, addEdge, MiniMap, getIncomers, getOutgoers } from '@xyflow/react';
+import { 
+  ReactFlow, 
+  Controls, 
+  Background, 
+  BackgroundVariant, 
+  useNodesState, 
+  useEdgesState, 
+  addEdge, 
+  MiniMap, 
+  Connection,
+} from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import NodePalette from './Components/NodePalette';
 import AskAINode from './Components/Nodes/AskAINode';
@@ -14,25 +23,16 @@ import { Node, Edge, TransferData } from './types/types';
 import { IoPlayOutline } from "react-icons/io5";
 
 const App: React.FC = () => {
+  // Define state for showing the palette
   const [showPalette, setShowPalette] = useState<boolean>(false);
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
-  
 
-  const findStartNodes = useCallback((nodes: Node[], edges: Edge[]): Node[] => {
-    return nodes.filter((node) => {
-      const incomers = getIncomers(node, nodes, edges);
-      return incomers.length === 0;
-    });
-  }, []);
-
-  const getNextNodes = useCallback((node: Node, nodes: Node[], edges: Edge[]): Node[] => {
-    return getOutgoers(node, nodes, edges);
-  }, []);
+  // Use the single item type for nodes and edges
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
   const downloadPDF = async (pdfPath: string): Promise<void> => {
     try {
-      const filename = pdfPath.split('/').pop(); // Extract filename from path
+      const filename = pdfPath.split('/').pop();
       const response = await api.get(`/download-pdf/${filename}`, { responseType: 'blob' });
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -61,18 +61,17 @@ const App: React.FC = () => {
       console.log("Workflow execution results:", response.data.results);
   
       Object.entries(response.data.results).forEach(([nodeId, result]) => {
-        if (nodeId.includes('pdf') && result.includes('PDF generated successfully at')) {
-          const pdfPath = result.split('PDF generated successfully at ')[1];
+        const resultStr = result as string;
+        if (nodeId.includes('pdf') && resultStr.includes('PDF generated successfully at')) {
+          const pdfPath = resultStr.split('PDF generated successfully at ')[1];
           console.log("Extracted PDF path:", pdfPath);
           downloadPDF(pdfPath);
         }
       });
-    } catch (error) {
-      console.error("Error executing workflow:", error.response?.data || error.message);
+    } catch (error: any) {
+      console.error("Error executing workflow:", error?.response?.data || error?.message || error);
     }
   };
-
- 
 
   const nodeTypes = {
     askAI: AskAINode,
@@ -84,7 +83,7 @@ const App: React.FC = () => {
   };
 
   const onConnect = useCallback(
-    (params: any) => setEdges((eds) => addEdge(params, eds)),
+    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
 
@@ -111,12 +110,10 @@ const App: React.FC = () => {
         id: `${transferData.type}-${Date.now()}`,
         type: transferData.type,
         position,
-        data: { 
-          label: transferData.label
-        }
+        data: { label: transferData.label }
       };
 
-      setNodes((nds) => nds.concat(newNode));
+      setNodes((nds) => [...nds, newNode]);
     } catch (error) {
       console.error('Error dropping node:', error);
     }
@@ -164,7 +161,8 @@ const App: React.FC = () => {
         onDragOver={onDragOver}
       >
         <Controls />
-        <Background variant="dots" gap={10} size={1} />
+        {/* Use a valid variant from BackgroundVariant */}
+        <Background variant={BackgroundVariant.Dots} gap={10} size={1} />
         <MiniMap/>
       </ReactFlow>
     </div>

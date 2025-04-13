@@ -1,3 +1,5 @@
+import {  Edge as ReactFlowEdge, Node as ReactFlowNode } from '@xyflow/react';
+
 export interface NodeData {
   label: string;
   prompt?: string;
@@ -6,27 +8,23 @@ export interface NodeData {
   content?: string;
   title?: string;
   profileUrl?: string;  
-  formId?:string;
-  apiKey?:string
+  formId?: string;
+  apiKey?: string;
   companyValues?: string; 
   weights?: { [key: string]: number };
   cultureFitContext?: string;
   _previous_results?: string[];
-
-
+  [key: string]: unknown; // Add this to make it compatible with Record<string, unknown>
 }
 
-export interface Node {
-  id: string;
-  type: string;
-  position: { x: number; y: number };
-  data: NodeData;
+// Extend ReactFlow's Node type
+export interface Node extends ReactFlowNode<NodeData> {
+  type: string; // Make sure type is required, not optional
 }
 
-export interface Edge {
-  id: string;
-  source: string;
-  target: string;
+// Extend ReactFlow's Edge type
+export interface Edge extends ReactFlowEdge {
+  // Add any custom edge properties here if needed
 }
 
 export interface TransferData {
@@ -46,5 +44,5 @@ export interface PaletteItem {
   id: string;
   label: string;
   type: string;
-  icon: string | JSX.Element;
+  icon: string | React.ReactElement;
 }

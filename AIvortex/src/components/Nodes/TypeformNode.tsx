@@ -7,7 +7,7 @@ interface TypeformNodeProps {
   id: string;
 }
 
-const TypeformNode: React.FC<TypeformNodeProps> = ({ data, id }) => {
+const TypeformNode: React.FC<TypeformNodeProps> = ({ data }) => {
   const [formId, setFormId] = useState<string>(data.formId || '');
   const [apiKey, setApiKey] = useState<string>(data.apiKey || '');
 

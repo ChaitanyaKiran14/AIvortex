@@ -8,7 +8,7 @@ interface AskAINodeProps {
   connectedCultureFitData?: string; 
 }
 
-const AskAINode: React.FC<AskAINodeProps> = ({ data, id, connectedCultureFitData }) => {
+const AskAINode: React.FC<AskAINodeProps> = ({ data, connectedCultureFitData }) => {
   const [prompt, setPrompt] = useState<string>(data.prompt || '');
   const [context, setContext] = useState<string>(data.context || '');
   const [model, setModel] = useState<string>(data.model || 'gemini-pro');
@@ -77,6 +77,7 @@ const AskAINode: React.FC<AskAINodeProps> = ({ data, id, connectedCultureFitData
         <div>
           <label className="block font-medium mb-1">Choose AI model</label>
           <select
+          title='hey'
             value={model}
             onChange={(e) => setModel(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 focus:border-transparent"

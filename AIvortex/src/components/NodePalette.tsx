@@ -1,6 +1,6 @@
 import React from "react";
 import { Search, X } from "lucide-react";
-import { PaletteNode, PaletteItem } from '../types/types';
+import { PaletteNode } from '../types/types';
 
 interface NodePaletteProps {
   onClose: () => void;
@@ -51,7 +51,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
           type: 'typeform',
           icon: (
             <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 43 24" fill="none" preserveAspectRatio="xMidYMid meet" aria-hidden="true" role="img">
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M0 5.42456C0 1.8517 1.40765 0 3.78009 0C6.15215 0 7.56018 1.8517 7.56018 5.42456V16.2479C7.56018 19.8208 6.15252 21.6725 3.78009 21.6725C1.40765 21.6725 0 19.8208 0 16.2479V5.42456ZM25.4643 0H17.6512C10.6419 0 10.0894 3.027 10.0894 7.06301L10.0802 14.599C10.0802 18.8069 10.6082 21.6725 17.6784 21.6725H25.4643C32.4961 21.6725 33.0128 18.656 33.0128 14.62V7.07352C33.0128 3.027 32.4736 0 25.4643 0Z" fill="currentColor"></path>
+              <path fillRule="evenodd" clipRule="evenodd" d="M0 5.42456C0 1.8517 1.40765 0 3.78009 0C6.15215 0 7.56018 1.8517 7.56018 5.42456V16.2479C7.56018 19.8208 6.15252 21.6725 3.78009 21.6725C1.40765 21.6725 0 19.8208 0 16.2479V5.42456ZM25.4643 0H17.6512C10.6419 0 10.0894 3.027 10.0894 7.06301L10.0802 14.599C10.0802 18.8069 10.6082 21.6725 17.6784 21.6725H25.4643C32.4961 21.6725 33.0128 18.656 33.0128 14.62V7.07352C33.0128 3.027 32.4736 0 25.4643 0Z" fill="currentColor"></path>
             </svg>
           )
         }
@@ -89,7 +89,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
 
   return (
     <div className="fixed top-5 left-5 z-10 w-[340px] max-w-2xl h-[calc(100vh-40px)] bg-white rounded-lg shadow-lg flex flex-col">
-
+      {/* Rest of your component remains the same */}
       <div className="flex-none border-b border-gray-100">
         <div className="flex items-center justify-between px-4 pt-4">
           <div className="flex gap-4">
@@ -101,6 +101,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
           </button>
         </div>
 
+        {/* Search box */}
         <div className="px-4 py-3">
           <div className="relative">
             <Search className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
@@ -112,6 +113,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
           </div>
         </div>
 
+        {/* Filter buttons */}
         <div className="flex gap-2 px-5 pb-3 overflow-x-auto">
           <button className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium whitespace-nowrap">Core Nodes</button>
           <button className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium whitespace-nowrap">Integrations</button>
@@ -120,7 +122,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
         </div>
       </div>
 
-      
+      {/* Node categories */}
       <div className="flex-1 overflow-y-auto min-h-0 bg-gray-50">
         {paletteNodes.map((category, index) => (
           <div key={index} className="p-4">

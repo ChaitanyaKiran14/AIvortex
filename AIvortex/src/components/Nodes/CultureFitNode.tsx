@@ -7,7 +7,7 @@ interface CultureFitNodeProps {
   id: string;
 }
 
-const CultureFitNode: React.FC<CultureFitNodeProps> = ({ data, id }) => {
+const CultureFitNode: React.FC<CultureFitNodeProps> = ({ data}) => {
   const [companyValues, setCompanyValues] = useState<string>(data.companyValues || '');
   const [weights, setWeights] = useState<{ [key: string]: number }>(data.weights || {
     resourcefulness: 5,
@@ -79,6 +79,7 @@ const CultureFitNode: React.FC<CultureFitNodeProps> = ({ data, id }) => {
               <div key={key} className="flex items-center">
                 <span className="w-1/3 capitalize">{key}</span>
                 <input
+                
                   type="range"
                   min="1"
                   max="10"

@@ -6,8 +6,9 @@ interface CombineTextNodeProps {
   id: string;
 }
 
-const CombineTextNode: React.FC<CombineTextNodeProps> = ({ data, id }) => {
+const CombineTextNode: React.FC<CombineTextNodeProps> = () => {
   return (
+
     <div className="bg-white rounded-lg shadow-md min-w-[32rem]">
       <Handle type="target" position={Position.Top} />
       <div className="bg-green-200 p-4 rounded-t-lg flex items-center gap-3">

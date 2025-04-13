@@ -14,6 +14,7 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    
 
     /* Linting */
     "strict": true,
@@ -22,5 +23,13 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  
+
+
+
+  "include": [
+    "src",
+    "wwwroot/js/**/*.ts",
+    "wwwroot/js/**/*.tsx" 
+],
 }

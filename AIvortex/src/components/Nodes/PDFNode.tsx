@@ -7,7 +7,7 @@ interface PDFNodeProps {
   id: string;
 }
 
-const PDFNode: React.FC<PDFNodeProps> = ({ data, id }) => {
+const PDFNode: React.FC<PDFNodeProps> = ({ data }) => {
   const [content, setContent] = useState<string>(data.content || '');
   const [title, setTitle] = useState<string>(data.title || 'Candidate Evaluation Report');
 

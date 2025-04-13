@@ -7,7 +7,7 @@ interface LinkedInNodeProps {
   id: string;
 }
 
-const LinkedInNode: React.FC<LinkedInNodeProps> = ({ data, id }) => {
+const LinkedInNode: React.FC<LinkedInNodeProps> = ({ data}) => {
   const [profileUrl, setProfileUrl] = useState<string>(data.profileUrl || '');
   const [urlError, setUrlError] = useState<string>('');
 
