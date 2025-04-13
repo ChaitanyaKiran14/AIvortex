@@ -24,6 +24,7 @@ import { IoPlayOutline } from "react-icons/io5";
 
 const App: React.FC = () => {
   const [showPalette, setShowPalette] = useState<boolean>(false);
+  
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
