@@ -1,13 +1,13 @@
 import React, { useState, useCallback } from 'react';
-import { 
-  ReactFlow, 
-  Controls, 
-  Background, 
-  BackgroundVariant, 
-  useNodesState, 
-  useEdgesState, 
-  addEdge, 
-  MiniMap, 
+import {
+  ReactFlow,
+  Controls,
+  Background,
+  BackgroundVariant,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  MiniMap,
   Connection,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
@@ -20,13 +20,13 @@ import CombineTextNode from './components/Nodes/CombineTextNode';
 import CultureFitNode from './components/Nodes/CultureFitNode';
 import api from './services/api';
 import { Node, Edge, TransferData } from './types/types';
-import { IoPlayOutline } from "react-icons/io5";
+import { IoPlayOutline } from 'react-icons/io5';
 
 const App: React.FC = () => {
   const [showPalette, setShowPalette] = useState<boolean>(false);
-
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const downloadPDF = async (pdfPath: string): Promise<void> => {
     try {
@@ -41,33 +41,46 @@ const App: React.FC = () => {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading PDF:", error);
+      console.error('Error downloading PDF:', error);
       throw error;
     }
   };
-  
+
   const executeFlow = async (): Promise<void> => {
     if (nodes.length === 0) {
-      console.log("No nodes to execute.");
+      setErrorMessage('No nodes to execute.');
       return;
     }
-    
+
+    const invalidNodes = nodes.filter((node) => node.data.isValid === false);
+    if (invalidNodes.length > 0) {
+      setErrorMessage(
+        `Please fix errors in the following nodes: ${invalidNodes
+          .map((node) => node.data.label)
+          .join(', ')}`
+      );
+      return;
+    }
+
+    setErrorMessage('');
+
     const workflowPayload = { nodes, edges };
-    
+
     try {
-      const response = await api.post("/execute-workflow", workflowPayload);
-      console.log("Workflow execution results:", response.data.results);
-  
+      const response = await api.post('/execute-workflow', workflowPayload);
+      console.log('Workflow execution results:', response.data.results);
+
       Object.entries(response.data.results).forEach(([nodeId, result]) => {
         const resultStr = result as string;
         if (nodeId.includes('pdf') && resultStr.includes('PDF generated successfully at')) {
           const pdfPath = resultStr.split('PDF generated successfully at ')[1];
-          console.log("Extracted PDF path:", pdfPath);
+          console.log('Extracted PDF path:', pdfPath);
           downloadPDF(pdfPath);
         }
       });
     } catch (error: any) {
-      console.error("Error executing workflow:", error?.response?.data || error?.message || error);
+      console.error('Error executing workflow:', error?.response?.data || error?.message || error);
+      setErrorMessage('Failed to execute workflow. Please try again.');
     }
   };
 
@@ -77,7 +90,7 @@ const App: React.FC = () => {
     linkedIn: LinkedInNode,
     typeform: TypeformNode,
     combineText: CombineTextNode,
-    cultureFit: CultureFitNode, 
+    cultureFit: CultureFitNode,
   };
 
   const onConnect = useCallback(
@@ -92,23 +105,23 @@ const App: React.FC = () => {
 
   const onDrop = (event: React.DragEvent): void => {
     event.preventDefault();
-    
+
     try {
       const reactFlowBounds = event.currentTarget.getBoundingClientRect();
       const transferData: TransferData = JSON.parse(event.dataTransfer.getData('application/reactflow'));
-      
+
       if (!transferData) return;
 
       const position = {
         x: event.clientX - reactFlowBounds.left,
-        y: event.clientY - reactFlowBounds.top
+        y: event.clientY - reactFlowBounds.top,
       };
 
       const newNode: Node = {
         id: `${transferData.type}-${Date.now()}`,
         type: transferData.type,
         position,
-        data: { label: transferData.label }
+        data: { label: transferData.label, isValid: true }, // Initialize as valid
       };
 
       setNodes((nds) => [...nds, newNode]);
@@ -123,13 +136,13 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className='w-screen h-screen'>
+    <div className="w-screen h-screen">
       <button
         onClick={() => setShowPalette(true)}
         className="absolute top-5 left-5 z-10 h-10 w-10 bg-pink-300 rounded-full text-pink-900 flex items-center justify-center text-2xl p-7 font-medium hover:bg-pink-400 transition-colors"
       >
         +
-      </button> 
+      </button>
 
       <button
         onClick={executeFlow}
@@ -141,8 +154,14 @@ const App: React.FC = () => {
         </div>
       </button>
 
+      {errorMessage && (
+        <div className="absolute top-20 right-5 z-10 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {errorMessage}
+        </div>
+      )}
+
       {showPalette && (
-        <NodePalette 
+        <NodePalette
           onClose={() => setShowPalette(false)}
           onDragStart={onDragStart}
         />
@@ -160,7 +179,7 @@ const App: React.FC = () => {
       >
         <Controls />
         <Background variant={BackgroundVariant.Dots} gap={10} size={1} />
-        <MiniMap/>
+        <MiniMap />
       </ReactFlow>
     </div>
   );

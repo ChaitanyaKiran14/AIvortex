@@ -14,6 +14,7 @@ export interface NodeData {
   weights?: { [key: string]: number };
   cultureFitContext?: string;
   _previous_results?: string[];
+  isValid?: boolean;
   [key: string]: unknown; 
 }
 

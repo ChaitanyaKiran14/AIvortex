@@ -1,31 +1,39 @@
 import { Handle, Position } from '@xyflow/react';
 import { useState, useEffect } from 'react';
 import { NodeData } from '../../types/types';
+import { LinkedInNodeSchema } from '../../utils/validation';
+import { z } from 'zod';
 
 interface LinkedInNodeProps {
   data: NodeData;
   id: string;
 }
 
-const LinkedInNode: React.FC<LinkedInNodeProps> = ({ data}) => {
+const LinkedInNode: React.FC<LinkedInNodeProps> = ({ data }) => {
   const [profileUrl, setProfileUrl] = useState<string>(data.profileUrl || '');
-  const [urlError, setUrlError] = useState<string>('');
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  
-  const validateUrl = (url: string) => {
-    const linkedInRegex = /^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$/;
-    if (!url) {
-      setUrlError('LinkedIn profile URL is required.');
-    } else if (!linkedInRegex.test(url)) {
-      setUrlError('Please enter a valid LinkedIn profile URL (e.g., https://www.linkedin.com/in/username/).');
-    } else {
-      setUrlError('');
+  const validate = () => {
+    try {
+      LinkedInNodeSchema.parse({ profileUrl });
+      setErrors({});
+      return true;
+    } catch (e) {
+      if (e instanceof z.ZodError) {
+        const errorObj: { [key: string]: string } = {};
+        e.errors.forEach((err) => {
+          if (err.path[0]) errorObj[err.path[0]] = err.message;
+        });
+        setErrors(errorObj);
+        return false;
+      }
+      return false;
     }
   };
 
   useEffect(() => {
-    validateUrl(profileUrl);
     data.profileUrl = profileUrl;
+    data.isValid = validate();
   }, [profileUrl, data]);
 
   return (
@@ -40,7 +48,6 @@ const LinkedInNode: React.FC<LinkedInNodeProps> = ({ data}) => {
           <div className="text-gray-800 font-semibold">LinkedIn Profile Scraper</div>
         </div>
       </div>
-
       <div className="p-4 space-y-4">
         <div>
           <label className="block font-medium mb-1">LinkedIn Profile URL</label>
@@ -50,10 +57,10 @@ const LinkedInNode: React.FC<LinkedInNodeProps> = ({ data}) => {
             value={profileUrl}
             onChange={(e) => setProfileUrl(e.target.value)}
             className={`w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-              urlError ? 'border-red-500' : 'border-gray-300'
+              errors.profileUrl ? 'border-red-500' : 'border-gray-300'
             }`}
           />
-          {urlError && <p className="text-sm text-red-600 mt-1">{urlError}</p>}
+          {errors.profileUrl && <p className="text-sm text-red-600 mt-1">{errors.profileUrl}</p>}
         </div>
       </div>
       <Handle type="source" position={Position.Bottom} />

@@ -17,7 +17,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
       items: [
         { 
           id: 'ask-ai',  
-          label: 'Ask Gemini AI',  
+          label: 'Ask AI',  
           type: 'askAI',  
           icon: (<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="M16 8.016A8.522 8.522 0 008.016 16h-.032A8.521 8.521 0 000 8.016v-.032A8.521 8.521 0 007.984 0h.032A8.522 8.522 0 0016 7.984v.032z" fill="url(#prefix__paint0_radial_980_20147)"/><defs><radialGradient id="prefix__paint0_radial_980_20147" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(16.1326 5.4553 -43.70045 129.2322 1.588 6.503)"><stop offset=".067" /><stop offset=".343"/><stop offset=".672"/></radialGradient></defs></svg>)
         },
@@ -89,7 +89,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
 
   return (
     <div className="fixed top-5 left-5 z-10 w-[340px] max-w-2xl h-[calc(100vh-40px)] bg-white rounded-lg shadow-lg flex flex-col">
-      {/* Rest of your component remains the same */}
+    
       <div className="flex-none border-b border-gray-100">
         <div className="flex items-center justify-between px-4 pt-4">
           <div className="flex gap-4">
@@ -101,7 +101,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
           </button>
         </div>
 
-        {/* Search box */}
+
         <div className="px-4 py-3">
           <div className="relative">
             <Search className="w-5 h-5 absolute left-3 top-2.5 text-gray-400" />
@@ -113,7 +113,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
           </div>
         </div>
 
-        {/* Filter buttons */}
+      
         <div className="flex gap-2 px-5 pb-3 overflow-x-auto">
           <button className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium whitespace-nowrap">Core Nodes</button>
           <button className="px-2 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium whitespace-nowrap">Integrations</button>
@@ -122,7 +122,7 @@ const NodePalette: React.FC<NodePaletteProps> = ({ onClose, onDragStart }) => {
         </div>
       </div>
 
-      {/* Node categories */}
+      
       <div className="flex-1 overflow-y-auto min-h-0 bg-gray-50">
         {paletteNodes.map((category, index) => (
           <div key={index} className="p-4">
