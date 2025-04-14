@@ -22,6 +22,8 @@ origins = [
     "http://localhost:5174",
     "http://localhost:3000",
     "https://aievaluate.xyz",
+    "https://app.aievaluate.xyz/",
+    "https://a-ivortex-4bqb.vercel.app/",
     
 ]
 
